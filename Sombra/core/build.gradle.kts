@@ -6,9 +6,7 @@ plugins {
 android {
     namespace = "com.dmm.core"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -27,7 +25,7 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
+    api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui.graphics)
     api(libs.androidx.compose.material3)
 

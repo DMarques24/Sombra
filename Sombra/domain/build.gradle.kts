@@ -5,9 +5,7 @@ plugins {
 android {
     namespace = "com.dmm.domain"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -23,10 +21,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":data"))
-    implementation(project(":presentation"))
-
-
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
