@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -28,6 +29,7 @@ dependencies {
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui.graphics)
     api(libs.androidx.compose.material3)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

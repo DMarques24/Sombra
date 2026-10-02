@@ -1,54 +1,59 @@
 package com.dmm.sombra
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.splashscreen.SplashScreenViewProvider
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.presentation.main.MainViewModel
+import com.dmm.sombra.navigation.SombraNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
 
         // Fica à espera de verificar se tem login feito ou não
-        // TODO: trocar `false` por viewModel.isLoading.value
-        splash.setKeepOnScreenCondition { false }
+        splash.setKeepOnScreenCondition { viewModel.isLoading.value }
+        splash.setOnExitAnimationListener { splashView -> playSplashExitAnimation(splashView) }
         enableEdgeToEdge()
-        setContent {
-            SombraTheme {
-                HelloWorldScreen()
-            }
-        }
+        setContent { SombraTheme { Surface { SombraNavHost() } } }
     }
-}
 
-@Composable
-fun HelloWorldScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = "Hello World",
-                style = MaterialTheme.typography.headlineMedium,
-            )
+    private fun playSplashExitAnimation(splashView: SplashScreenViewProvider) {
+        val icon = splashView.iconView
+
+        val pulse = ObjectAnimator.ofPropertyValuesHolder(
+            icon,
+            PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.25f, 0.9f, 1.1f, 1f),
+            PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.25f, 0.9f, 1.1f, 1f),
+        ).apply {
+            duration = 900L
+            interpolator = AccelerateDecelerateInterpolator()
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-private fun HelloWorldScreenPreview() {
-    SombraTheme {
-        HelloWorldScreen()
+        val fadeOut = ObjectAnimator.ofFloat(splashView.view, View.ALPHA, 1f, 0f).apply {
+            duration = 300L
+        }
+
+        AnimatorSet().apply {
+            playSequentially(pulse, fadeOut)
+            doOnEnd { splashView.remove() }
+            start()
+        }
     }
 }
