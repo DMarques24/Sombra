@@ -1,22 +1,17 @@
 package com.dmm.core.navigation
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.dmm.core.R
 
 // Os separadores da barra de navegação, pela ordem em que aparecem.
 enum class TopLevelDestination(
     val route: Any,
-    val icon: ImageVector,
+    @param:DrawableRes val icon: Int,
     @param:StringRes val label: Int,
 ) {
-    HOME(HomeRoute, Icons.Rounded.Home, R.string.nav_home),
-    FORECAST(ForecastRoute, Icons.Rounded.CalendarMonth, R.string.nav_forecast),
-    TIMER(TimerRoute, Icons.Rounded.Timer, R.string.nav_timer),
-    PROFILE(ProfileRoute, Icons.Rounded.Person, R.string.nav_profile),
+    HOME(HomeRoute, R.drawable.ic_nav_today, R.string.nav_today),
+    FORECAST(ForecastRoute, R.drawable.ic_nav_forecast, R.string.nav_forecast),
+    TIMER(TimerRoute, R.drawable.ic_nav_sunscreen, R.string.nav_timer),
+    PROFILE(ProfileRoute, R.drawable.ic_nav_profile, R.string.nav_profile),
 }
