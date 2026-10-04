@@ -1,6 +1,6 @@
 package com.dmm.presentation.home
 
-import androidx.compose.foundation.layout.Box
+import  androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,7 +21,6 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     HomeContent(uiState = uiState)
 }
 
-// Só desenha o estado que recebe: fácil de pré-visualizar e testar.
 @Composable
 fun HomeContent(uiState: HomeUiState, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize()) {
