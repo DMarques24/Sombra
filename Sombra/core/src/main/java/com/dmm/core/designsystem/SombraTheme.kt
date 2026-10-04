@@ -29,6 +29,11 @@ private val LightColorScheme = lightColorScheme(
     onSurface = SombraColors.Text,
     surfaceVariant = SombraColors.SurfaceSoft,   // campos de texto, cartões suaves
     onSurfaceVariant = SombraColors.TextMuted,   // texto secundário
+    surfaceContainerLowest = SombraColors.Surface,
+    surfaceContainerLow = SombraColors.Surface,
+    surfaceContainer = SombraColors.Surface,
+    surfaceContainerHigh = SombraColors.SurfaceSoft,
+    surfaceContainerHighest = SombraColors.SurfaceSoft,
 
     outline = SombraColors.Line,
     outlineVariant = SombraColors.SurfaceSoft,
@@ -61,6 +66,11 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = SombraColors.TextDark,
     surfaceVariant = SombraColors.SurfaceSoftDark,
     onSurfaceVariant = SombraColors.TextMutedDark,
+    surfaceContainerLowest = SombraColors.SurfaceDark,
+    surfaceContainerLow = SombraColors.SurfaceDark,
+    surfaceContainer = SombraColors.SurfaceDark,
+    surfaceContainerHigh = SombraColors.SurfaceSoftDark,
+    surfaceContainerHighest = SombraColors.SurfaceSoftDark,
 
     outline = SombraColors.LineDark,
     outlineVariant = SombraColors.SurfaceSoftDark,

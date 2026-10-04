@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dmm.core.components.SombraNavigationBar
+import com.dmm.core.components.SombraTopBar
 import com.dmm.core.navigation.ForecastRoute
 import com.dmm.core.navigation.HomeRoute
 import com.dmm.core.navigation.ProfileRoute
@@ -51,7 +53,8 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
         NavHost(
             navController = navController,
             startDestination = HomeRoute,          // primeiro ecrã a aparecer
-            modifier = Modifier.padding(innerPadding),
+            // Só o espaço da barra em baixo: o céu do Início pode ir até ao topo, por trás da status bar
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         ) {
             homeScreen(
                 // o que acontece quando o Início pede para abrir o tipo de pele
@@ -61,10 +64,10 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             composable<ForecastRoute> { PlaceholderScreen(TopLevelDestination.FORECAST) }
             composable<TimerRoute> { PlaceholderScreen(TopLevelDestination.TIMER) }
             composable<ProfileRoute> { PlaceholderScreen(TopLevelDestination.PROFILE) }
-           /* skinTypeScreen(
-                onDone = { navController.popBackStack() },   // voltar atrás
-                onBack = { navController.popBackStack() },
-            )*/
+            /* skinTypeScreen(
+                 onDone = { navController.popBackStack() },   // voltar atrás
+                 onBack = { navController.popBackStack() },
+             )*/
         }
     }
 }

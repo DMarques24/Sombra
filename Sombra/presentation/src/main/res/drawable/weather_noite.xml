@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="256dp"
+    android:height="256dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <!-- lua -->
+    <path
+        android:fillColor="#FFFFE9A8"
+        android:pathData="M113.1 62.3A70 70 0 1 0 184.9 158.2 60 60 0 0 1 113.1 62.3Z"/>
+    <!-- estrelas -->
+    <path
+        android:fillColor="#FFFFE9A8"
+        android:pathData="M192 70A8 8 0 1 1 208 70A8 8 0 1 1 192 70Z M217 118A5 5 0 1 1 227 118A5 5 0 1 1 217 118Z M171 40A5 5 0 1 1 181 40A5 5 0 1 1 171 40Z"/>
+</vector>

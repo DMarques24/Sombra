@@ -3,10 +3,13 @@ package com.dmm.sombra
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
@@ -30,7 +33,14 @@ class MainActivity : ComponentActivity() {
         // Fica à espera de verificar se tem login feito ou não
         splash.setKeepOnScreenCondition { viewModel.isLoading.value }
         splash.setOnExitAnimationListener { splashView -> playSplashExitAnimation(splashView) }
-        enableEdgeToEdge()
+        // Barras do sistema transparentes: a nossa barra de navegação pinta também por trás dos botões do Android
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
+        // Tira o véu que o Android põe por trás dos 3 botões (API 29+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
         setContent { SombraTheme { Surface { SombraNavHost() } } }
     }
 

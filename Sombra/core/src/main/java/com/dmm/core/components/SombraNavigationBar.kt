@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.core.navigation.TopLevelDestination
 
-// Só desenha a barra: recebe o separador ativo e avisa quando outro é tocado.
-// Quem navega de facto é o NavHost, na app.
 @Composable
 fun SombraNavigationBar(
     currentDestination: TopLevelDestination?,

@@ -31,6 +31,7 @@ object SombraColors {
     val SkyBluePale = Color(0xFFBFE0FB)
     val SkyBlueDeep = Color(0xFF0B2E52)
     val SkyContainerDark = Color(0xFF123A63)
+    val OnSky = Color(0xFFFFF8EC)          // texto creme por cima do céu
 
     // ---------- Escala UV (OMS) ----------
     val UvLow = Color(0xFF3AA655)          // 0–2
