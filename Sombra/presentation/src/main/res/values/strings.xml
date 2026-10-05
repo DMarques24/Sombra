@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reapply_button">Reapliquei</string>
+    <string name="forecast_title">Planear o dia</string>
+    <string name="forecast_today">Hoje</string>
+    <string name="forecast_uv_title">Índice UV por hora</string>
+    <string name="forecast_uv_now">agora: %1$d</string>
+    <string name="forecast_uv_bar_description">%1$d horas, UV %2$d</string>
+    <string name="uv_level_low">Baixo 0–2</string>
+    <string name="uv_level_moderate">Moderado 3–5</string>
+    <string name="uv_level_high">Alto 6–7</string>
+    <string name="uv_level_very_high">Muito alto 8–10</string>
 </resources>

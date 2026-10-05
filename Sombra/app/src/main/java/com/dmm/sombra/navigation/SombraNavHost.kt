@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -21,13 +20,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dmm.core.components.SombraNavigationBar
-import com.dmm.core.components.SombraTopBar
-import com.dmm.core.navigation.ForecastRoute
 import com.dmm.core.navigation.HomeRoute
 import com.dmm.core.navigation.ProfileRoute
 import com.dmm.core.navigation.TimerRoute
 import com.dmm.core.navigation.TopLevelDestination
 import com.dmm.presentation.home.homeScreen
+import com.dmm.presentation.forecast.forecastScreen
 
 @Composable
 fun SombraNavHost(modifier: Modifier = Modifier) {
@@ -60,8 +58,8 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
                 // o que acontece quando o Início pede para abrir o tipo de pele
                 // onOpenSkinType = { navController.navigate(SkinTypeRoute) },
             )
+            forecastScreen()
             // TODO: trocar pelos ecrãs verdadeiros quando existirem
-            composable<ForecastRoute> { PlaceholderScreen(TopLevelDestination.FORECAST) }
             composable<TimerRoute> { PlaceholderScreen(TopLevelDestination.TIMER) }
             composable<ProfileRoute> { PlaceholderScreen(TopLevelDestination.PROFILE) }
             /* skinTypeScreen(
