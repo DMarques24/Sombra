@@ -14,11 +14,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dmm.core.components.SombraNavigationBar
 import com.dmm.core.navigation.HomeRoute
+import com.dmm.core.navigation.LoginRoute
 import com.dmm.core.navigation.TopLevelDestination
 import com.dmm.presentation.home.homeScreen
 import com.dmm.presentation.forecast.forecastScreen
 import com.dmm.presentation.timer.timerScreen
 import com.dmm.presentation.profile.profileScreen
+import com.dmm.presentation.login.loginScreen
 
 @Composable
 fun SombraNavHost(modifier: Modifier = Modifier) {
@@ -35,15 +37,19 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            SombraNavigationBar(
-                currentDestination = currentDestination,
-                onNavigate = { navController.navigateToTopLevel(it) },
-            )
+            // O login não tem barra de navegação
+            val isLogin = backStackEntry?.destination?.hasRoute(LoginRoute::class) == true
+            if (!isLogin) {
+                SombraNavigationBar(
+                    currentDestination = currentDestination,
+                    onNavigate = { navController.navigateToTopLevel(it) },
+                )
+            }
         },
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = HomeRoute,          // primeiro ecrã a aparecer
+            startDestination = LoginRoute,
             // Só o espaço da barra em baixo: o céu do Início pode ir até ao topo, por trás da status bar
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         ) {
@@ -54,6 +60,7 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             forecastScreen()
             timerScreen()
             profileScreen()
+            loginScreen()
             /* skinTypeScreen(
                  onDone = { navController.popBackStack() },   // voltar atrás
                  onBack = { navController.popBackStack() },
