@@ -1,4 +1,4 @@
-package com.dmm.presentation.login.component
+package com.dmm.core.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 
-// "Ainda não tens conta? Criar conta": só a parte a negrito é clicável
+// Pergunta + ação a negrito (ex.: "Ainda não tens conta? Criar conta"). Só a parte a negrito é clicável.
 @Composable
-fun SignUpPrompt(
+fun SombraLinkPrompt(
     question: String,
     action: String,
     onActionClick: () -> Unit,
@@ -41,9 +41,9 @@ fun SignUpPrompt(
 
 @Preview(showBackground = true)
 @Composable
-private fun SignUpPromptPreview() {
+private fun SombraLinkPromptPreview() {
     SombraTheme {
-        SignUpPrompt(
+        SombraLinkPrompt(
             question = "Ainda não tens conta?",
             action = "Criar conta",
             onActionClick = {},

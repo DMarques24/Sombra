@@ -19,3 +19,6 @@ data object ProfileRoute
 
 @Serializable
 data object LoginRoute
+
+@Serializable
+data object RegisterRoute

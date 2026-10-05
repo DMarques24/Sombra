@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraDarkButton
+import com.dmm.core.components.SombraLinkPrompt
 import com.dmm.core.components.SombraSecondaryButton
 import com.dmm.core.components.SombraTextField
 import com.dmm.core.designsystem.SombraColors
@@ -37,16 +38,19 @@ import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
 import com.dmm.presentation.login.component.LoginSkyHeader
 import com.dmm.presentation.login.component.OrDivider
-import com.dmm.presentation.login.component.SignUpPrompt
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    onLogin: () -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // TODO: ligar Entrar, Apple, Google, Esqueci-me e Criar conta quando houver lógica
+    // TODO: ligar Apple, Google, Esqueci-me e Criar conta quando houver lógica
     LoginContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
+        onLogin = onLogin,      // a navegação é decidida no SombraNavHost
     )
 }
 
@@ -132,7 +136,7 @@ fun LoginContent(
                 }
             }
         }
-        SignUpPrompt(
+        SombraLinkPrompt(
             question = stringResource(R.string.login_no_account),
             action = stringResource(R.string.login_create_account),
             onActionClick = onCreateAccount,
