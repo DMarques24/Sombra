@@ -1,4 +1,4 @@
-package com.dmm.presentation.register.component
+package com.dmm.core.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
@@ -14,9 +14,9 @@ import com.dmm.core.designsystem.SombraTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 
-// Barra fina no topo que mostra em que passo do registo estamos
+// Barra fina no topo que mostra em que passo de um fluxo estamos (registo, onboarding)
 @Composable
-fun StepProgressBar(
+fun SombraStepProgressBar(
     step: Int,
     totalSteps: Int,
     description: String,
@@ -38,8 +38,8 @@ fun StepProgressBar(
 
 @Preview(showBackground = true)
 @Composable
-private fun StepProgressBarPreview() {
+private fun SombraStepProgressBarPreview() {
     SombraTheme {
-        StepProgressBar(step = 1, totalSteps = 3, description = "Passo 1 de 3", modifier = Modifier.padding(20.dp))
+        SombraStepProgressBar(step = 1, totalSteps = 3, description = "Passo 1 de 3", modifier = Modifier.padding(20.dp))
     }
 }

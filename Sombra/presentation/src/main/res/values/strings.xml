@@ -95,4 +95,27 @@
     <string name="password_weak">Fraca</string>
     <string name="password_medium">Média</string>
     <string name="password_strong">Forte</string>
+
+    <!-- Tipo de pele -->
+    <string name="skin_type_title">Como reage a tua pele ao sol?</string>
+    <string name="skin_type_subtitle">Isto muda em quantos minutos começas a queimar.</string>
+    <string name="skin_type_name">Tipo %1$s</string>
+    <string name="skin_type_1">Queima sempre</string>
+    <string name="skin_type_2">Queima fácil</string>
+    <string name="skin_type_3">Às vezes</string>
+    <string name="skin_type_4">Raramente</string>
+    <string name="skin_type_5">Muito raro</string>
+    <string name="skin_type_6">Quase nunca</string>
+    <string name="skin_type_places_title">ONDE PASSAS MAIS TEMPO AO SOL?</string>
+    <string name="sun_place_beach">Praia</string>
+    <string name="sun_place_outdoor_work">Trabalho ao ar livre</string>
+    <string name="sun_place_running">Corrida</string>
+    <string name="sun_place_city">Cidade</string>
+    <string name="sun_place_mountain">Montanha</string>
+    <string name="skin_type_skip">Saltar</string>
+    <string name="skin_type_next">Seguinte</string>
+    <plurals name="skin_type_selected_count">
+        <item quantity="one">%d escolhido</item>
+        <item quantity="other">%d escolhidos</item>
+    </plurals>
 </resources>

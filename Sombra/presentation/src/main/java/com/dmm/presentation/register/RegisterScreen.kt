@@ -36,23 +36,27 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraDarkButton
 import com.dmm.core.components.SombraLinkPrompt
+import com.dmm.core.components.SombraStepProgressBar
 import com.dmm.core.components.SombraTextField
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
 import com.dmm.presentation.register.component.PasswordStrengthLabel
-import com.dmm.presentation.register.component.StepProgressBar
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel()) {
+fun RegisterScreen(
+    onContinue: () -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // TODO: ligar Continuar, Entrar e a localização quando houver lógica
+    // TODO: ligar Entrar e a localização quando houver lógica
     RegisterContent(
         uiState = uiState,
         onNameChange = viewModel::onNameChange,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onCityChange = viewModel::onCityChange,
+        onContinue = onContinue,      // a navegação é decidida no SombraNavHost
     )
 }
 
@@ -83,7 +87,7 @@ fun RegisterContent(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            StepProgressBar(
+            SombraStepProgressBar(
                 step = uiState.step,
                 totalSteps = uiState.totalSteps,
                 description = stringResource(R.string.register_step, uiState.step, uiState.totalSteps),

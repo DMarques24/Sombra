@@ -15,7 +15,9 @@ data object TimerRoute
 
 @Serializable
 data object ProfileRoute
-//@Serializable data object SkinTypeRoute
+
+@Serializable
+data object SkinTypeRoute
 
 @Serializable
 data object LoginRoute

@@ -16,6 +16,7 @@ import com.dmm.core.components.SombraNavigationBar
 import com.dmm.core.navigation.HomeRoute
 import com.dmm.core.navigation.LoginRoute
 import com.dmm.core.navigation.RegisterRoute
+import com.dmm.core.navigation.SkinTypeRoute
 import com.dmm.core.navigation.TopLevelDestination
 import com.dmm.presentation.home.homeScreen
 import com.dmm.presentation.forecast.forecastScreen
@@ -23,6 +24,7 @@ import com.dmm.presentation.timer.timerScreen
 import com.dmm.presentation.profile.profileScreen
 import com.dmm.presentation.login.loginScreen
 import com.dmm.presentation.register.registerScreen
+import com.dmm.presentation.skintype.skinTypeScreen
 
 @Composable
 fun SombraNavHost(modifier: Modifier = Modifier) {
@@ -39,11 +41,8 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            // O login e o registo não têm barra de navegação
-            val destination = backStackEntry?.destination
-            val isAuth = destination?.hasRoute(LoginRoute::class) == true ||
-                destination?.hasRoute(RegisterRoute::class) == true
-            if (!isAuth) {
+            // Só os 4 separadores têm barra; login, registo e tipo de pele não
+            if (currentDestination != null) {
                 SombraNavigationBar(
                     currentDestination = currentDestination,
                     onNavigate = { navController.navigateToTopLevel(it) },
@@ -67,11 +66,12 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             loginScreen(
                 onLogin = { navController.navigate(RegisterRoute) },
             )
-            registerScreen()
-            /* skinTypeScreen(
-                 onDone = { navController.popBackStack() },   // voltar atrás
-                 onBack = { navController.popBackStack() },
-             )*/
+            registerScreen(
+                onContinue = { navController.navigate(SkinTypeRoute) },
+            )
+            skinTypeScreen(
+                onNext = { navController.navigate(HomeRoute) }
+            )
         }
     }
 }
