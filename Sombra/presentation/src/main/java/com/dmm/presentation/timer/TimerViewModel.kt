@@ -13,4 +13,20 @@ class TimerViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow<TimerUiState>(TimerUiState.Idle())
 
     val uiState: StateFlow<TimerUiState> = _uiState.asStateFlow()
+
+    fun onApply() {
+        val idle = _uiState.value as? TimerUiState.Idle ?: return
+        _uiState.value = TimerUiState.Running(
+            spf = idle.selectedSpf.removeSuffix("+").toInt(),
+            inWater = idle.goingToWater
+        )
+    }
+
+    fun onReapply() {
+        _uiState.value = TimerUiState.Running()
+    }
+
+    fun onLeftSun() {
+        _uiState.value = TimerUiState.Idle()
+    }
 }

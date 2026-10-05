@@ -40,7 +40,12 @@ import com.dmm.presentation.timer.component.WaterToggleCard
 fun TimerScreen(viewModel: TimerViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // TODO: ligar os cliques ao ViewModel quando houver lógica
-    TimerContent(uiState = uiState)
+    TimerContent(
+        uiState = uiState,
+        onApply = viewModel::onApply,
+        onReapply = viewModel::onReapply,
+        onLeftSun = viewModel::onLeftSun
+    )
 }
 
 @Composable
@@ -57,22 +62,43 @@ fun TimerContent(
         is TimerUiState.Idle -> TimerLayout(
             modifier = modifier,
             content = { IdleContent(uiState, onSelectSpf, onWaterChange) },
-            buttons = { SombraDarkButton(text = stringResource(R.string.timer_apply_button), onClick = onApply) },
+            buttons = {
+                SombraDarkButton(
+                    text = stringResource(R.string.timer_apply_button),
+                    onClick = onApply
+                )
+            },
         )
+
         is TimerUiState.Running -> TimerLayout(
             modifier = modifier,
             content = { RunningContent(uiState) },
             buttons = {
-                SombraSunButton(text = stringResource(R.string.timer_reapply_button), onClick = onReapply)
-                SombraSecondaryButton(text = stringResource(R.string.timer_left_sun_button), onClick = onLeftSun)
+                SombraSunButton(
+                    text = stringResource(R.string.timer_reapply_button),
+                    onClick = onReapply
+                )
+                SombraSecondaryButton(
+                    text = stringResource(R.string.timer_left_sun_button),
+                    onClick = onLeftSun
+                )
             },
         )
+
         is TimerUiState.Finished -> TimerLayout(
             modifier = modifier,
             content = { FinishedContent(uiState) },
             buttons = {
-                SombraSunButton(text = stringResource(R.string.timer_reapply_xp_button, uiState.xpReward), onClick = onReapply)
-                SombraSecondaryButton(text = stringResource(R.string.timer_left_sun_button), onClick = onLeftSun)
+                SombraSunButton(
+                    text = stringResource(
+                        R.string.timer_reapply_xp_button,
+                        uiState.xpReward
+                    ), onClick = onReapply
+                )
+                SombraSecondaryButton(
+                    text = stringResource(R.string.timer_left_sun_button),
+                    onClick = onLeftSun
+                )
             },
         )
     }
@@ -168,7 +194,11 @@ private fun RunningContent(state: TimerUiState.Running) {
 private fun FinishedContent(state: TimerUiState.Finished) {
     TimerHeader(
         title = stringResource(R.string.timer_title_finished),
-        subtitle = stringResource(R.string.timer_subtitle_finished, state.elapsedHours, state.appliedAt),
+        subtitle = stringResource(
+            R.string.timer_subtitle_finished,
+            state.elapsedHours,
+            state.appliedAt
+        ),
     )
     TimerRing(
         time = "0:00",
