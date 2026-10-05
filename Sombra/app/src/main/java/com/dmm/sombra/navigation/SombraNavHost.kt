@@ -22,10 +22,10 @@ import androidx.navigation.compose.rememberNavController
 import com.dmm.core.components.SombraNavigationBar
 import com.dmm.core.navigation.HomeRoute
 import com.dmm.core.navigation.ProfileRoute
-import com.dmm.core.navigation.TimerRoute
 import com.dmm.core.navigation.TopLevelDestination
 import com.dmm.presentation.home.homeScreen
 import com.dmm.presentation.forecast.forecastScreen
+import com.dmm.presentation.timer.timerScreen
 
 @Composable
 fun SombraNavHost(modifier: Modifier = Modifier) {
@@ -60,7 +60,7 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             )
             forecastScreen()
             // TODO: trocar pelos ecrãs verdadeiros quando existirem
-            composable<TimerRoute> { PlaceholderScreen(TopLevelDestination.TIMER) }
+            timerScreen()
             composable<ProfileRoute> { PlaceholderScreen(TopLevelDestination.PROFILE) }
             /* skinTypeScreen(
                  onDone = { navController.popBackStack() },   // voltar atrás

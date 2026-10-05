@@ -10,4 +10,32 @@
     <string name="uv_level_moderate">Moderado 3–5</string>
     <string name="uv_level_high">Alto 6–7</string>
     <string name="uv_level_very_high">Muito alto 8–10</string>
+
+    <!-- Protetor (temporizador) -->
+    <string name="timer_title">Protetor</string>
+    <string name="timer_title_finished">Hora de reaplicar</string>
+    <string name="timer_subtitle_idle">Nenhum temporizador a decorrer.</string>
+    <string name="timer_subtitle_running">SPF %1$d aplicado às %2$s.</string>
+    <string name="timer_subtitle_finished">Passaram %1$d horas desde as %2$s.</string>
+    <string name="timer_ring_idle">horas até reaplicar</string>
+    <string name="timer_ring_running">até reaplicar</string>
+    <string name="timer_ring_finished">terminou há %1$d min</string>
+    <string name="timer_uv_now_title">UV %1$d agora</string>
+    <string name="timer_uv_recommendation">Para a tua pele recomendamos SPF %1$d.</string>
+    <string name="timer_uv_still_title">O UV ainda está em %1$d</string>
+    <string name="timer_uv_still_description">O protetor já não te está a proteger como antes.</string>
+    <string name="timer_spf_label">Fator que vais usar</string>
+    <string name="timer_water_title">Vou para a água</string>
+    <string name="timer_water_subtitle">Avisa ao fim de 40 min</string>
+    <string name="timer_stat_notify">Aviso às</string>
+    <string name="timer_stat_uv">UV agora</string>
+    <string name="timer_stat_water">Na água</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="timer_notify_hint">Recebes uma notificação quando chegar a hora.</string>
+    <string name="timer_auto_stop_hint">Sem resposta em %1$d min, o temporizador termina sozinho.</string>
+    <string name="timer_apply_button">Apliquei protetor agora</string>
+    <string name="timer_reapply_button">Reapliquei agora</string>
+    <string name="timer_reapply_xp_button">Reapliquei agora · +%1$d XP</string>
+    <string name="timer_left_sun_button">Já saí do sol</string>
 </resources>
