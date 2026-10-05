@@ -1,31 +1,24 @@
 package com.dmm.sombra.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dmm.core.components.SombraNavigationBar
 import com.dmm.core.navigation.HomeRoute
-import com.dmm.core.navigation.ProfileRoute
 import com.dmm.core.navigation.TopLevelDestination
 import com.dmm.presentation.home.homeScreen
 import com.dmm.presentation.forecast.forecastScreen
 import com.dmm.presentation.timer.timerScreen
+import com.dmm.presentation.profile.profileScreen
 
 @Composable
 fun SombraNavHost(modifier: Modifier = Modifier) {
@@ -59,9 +52,8 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
                 // onOpenSkinType = { navController.navigate(SkinTypeRoute) },
             )
             forecastScreen()
-            // TODO: trocar pelos ecrãs verdadeiros quando existirem
             timerScreen()
-            composable<ProfileRoute> { PlaceholderScreen(TopLevelDestination.PROFILE) }
+            profileScreen()
             /* skinTypeScreen(
                  onDone = { navController.popBackStack() },   // voltar atrás
                  onBack = { navController.popBackStack() },
@@ -80,12 +72,3 @@ private fun NavHostController.navigateToTopLevel(destination: TopLevelDestinatio
     }
 }
 
-@Composable
-private fun PlaceholderScreen(destination: TopLevelDestination) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = stringResource(destination.label),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-    }
-}

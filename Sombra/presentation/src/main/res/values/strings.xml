@@ -38,4 +38,32 @@
     <string name="timer_reapply_button">Reapliquei agora</string>
     <string name="timer_reapply_xp_button">Reapliquei agora · +%1$d XP</string>
     <string name="timer_left_sun_button">Já saí do sol</string>
+
+    <!-- Perfil -->
+    <string name="profile_settings">Definições</string>
+    <string name="profile_subtitle">Pele tipo %1$s · %2$s</string>
+    <string name="profile_level">Nível %1$d · %2$s</string>
+    <string name="profile_xp">%1$d / %2$d XP</string>
+    <string name="profile_next_level">Próximo: %1$s · %2$s</string>
+    <string name="profile_stat_streak">dias seguidos</string>
+    <string name="profile_stat_high_uv">dias de UV alto protegidos</string>
+    <string name="profile_stat_on_time">reaplicações a tempo</string>
+    <string name="profile_patches_title">Patches</string>
+    <string name="profile_patches_count">%1$d de %2$d</string>
+    <string name="profile_patch_locked">%1$s, bloqueado</string>
+
+    <!-- Níveis -->
+    <string name="level_hat">Chapéu</string>
+    <string name="level_parasol">Guarda-sol</string>
+    <string name="level_parasol_unlock">desbloqueia modo família</string>
+
+    <!-- Patches -->
+    <string name="patch_first_sunscreen">Primeiro protetor</string>
+    <string name="patch_spf_week">Semana SPF</string>
+    <string name="patch_reapplier">Reaplicador</string>
+    <string name="patch_shade_hour">Hora da sombra</string>
+    <string name="patch_hat_on_top">Chapéu no topo</string>
+    <string name="patch_extreme_uv">UV 11+</string>
+    <string name="patch_protected_summer">Verão protegido</string>
+    <string name="patch_family">Família</string>
 </resources>
