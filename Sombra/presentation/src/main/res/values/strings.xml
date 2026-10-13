@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reapply_button">Reapliquei</string>
+    <string name="home_error">Não conseguimos carregar o tempo</string>
+    <string name="home_offline">Sem internet · dados de há %1$dh</string>
+    <string name="home_offline_refresh">Atualizar</string>
+    <string name="home_error_description">Verifica a ligação à internet e tenta outra vez. O temporizador do protetor continua a funcionar.</string>
+    <string name="action_retry">Tenta outra vez</string>
     <string name="forecast_title">Planear o dia</string>
     <string name="forecast_today">Hoje</string>
     <string name="forecast_uv_title">Índice UV por hora</string>

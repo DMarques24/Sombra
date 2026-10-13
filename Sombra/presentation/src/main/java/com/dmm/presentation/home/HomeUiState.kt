@@ -1,11 +1,19 @@
 package com.dmm.presentation.home
 
-data class HomeUiState(
-    val timerCard: TimerCardUiState = TimerCardUiState.Hidden,
-)
+sealed interface HomeUiState {
+    data object Loading : HomeUiState
+    data object Error : HomeUiState
+    data class Content(
+        val timerCard: TimerCardUiState,
+        val isOffline: Boolean = true,
+        val hoursSinceUpdate: Int = 0,
+        val updatedAt: String = "13:20",
+        val isRefreshing: Boolean = false,
+    ) : HomeUiState
+}
+
 
 sealed interface TimerCardUiState {
-    data object Hidden : TimerCardUiState
     data object Idle : TimerCardUiState
     data class Running(
         val remainingHours: Int,

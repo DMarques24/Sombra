@@ -38,7 +38,6 @@ fun TimerCard(
     modifier: Modifier = Modifier,
 ) {
     when (state) {
-        TimerCardUiState.Hidden -> Unit
         TimerCardUiState.Idle -> TimerCardRow(
             progress = 0f,
             ringColor = SombraColors.Line,
