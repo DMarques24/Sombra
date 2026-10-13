@@ -3,7 +3,7 @@ package com.dmm.data.di
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.dmm.data.repository.InMemorySunscreenRepository
-import com.dmm.domain.repository.SunscreenRepository
+import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

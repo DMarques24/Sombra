@@ -1,9 +1,9 @@
-package com.dmm.domain.usecase
+package com.dmm.domain.sunscreen.usecase
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.dmm.domain.model.TimerStatus
-import com.dmm.domain.repository.SunscreenRepository
+import com.dmm.domain.sunscreen.model.TimerStatus
+import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

@@ -2,7 +2,7 @@ package com.dmm.presentation.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.dmm.domain.model.TimerStatus
+import com.dmm.domain.sunscreen.model.TimerStatus
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 

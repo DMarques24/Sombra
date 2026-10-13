@@ -1,6 +1,6 @@
-package com.dmm.domain.repository
+package com.dmm.domain.sunscreen.repository
 
-import com.dmm.domain.model.SunscreenSession
+import com.dmm.domain.sunscreen.model.SunscreenSession
 import kotlinx.coroutines.flow.Flow
 
 interface SunscreenRepository {

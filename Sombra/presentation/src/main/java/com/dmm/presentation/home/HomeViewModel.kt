@@ -4,8 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.domain.repository.SunscreenRepository
-import com.dmm.domain.usecase.ObserveTimerStatusUseCase
+import com.dmm.domain.sunscreen.repository.SunscreenRepository
+import com.dmm.domain.sunscreen.usecase.ObserveTimerStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi

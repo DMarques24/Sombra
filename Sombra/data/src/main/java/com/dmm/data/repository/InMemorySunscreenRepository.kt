@@ -2,8 +2,8 @@ package com.dmm.data.repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.dmm.domain.model.SunscreenSession
-import com.dmm.domain.repository.SunscreenRepository
+import com.dmm.domain.sunscreen.model.SunscreenSession
+import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

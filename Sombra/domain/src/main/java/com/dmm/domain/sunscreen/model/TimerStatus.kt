@@ -1,4 +1,4 @@
-package com.dmm.domain.model
+package com.dmm.domain.sunscreen.model
 
 import android.os.Build
 import androidx.annotation.RequiresApi
