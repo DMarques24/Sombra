@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Marca -->
+    <color name="sombra_ink">#FF2B1600</color>       <!-- fundo do ícone, splash escuro -->
+    <color name="sombra_sun">#FFFFC23A</color>       <!-- sol principal -->
+    <color name="sombra_sun_strong">#FFFFB21A</color>
+    <color name="sombra_sun_deep">#FFF07F14</color>  <!-- metade em sombra, gradientes -->
+    <color name="sombra_text">#FF141310</color>
+    <color name="sombra_text_muted">#FF6F6A60</color>
+    <color name="sombra_surface">#FFFFFFFF</color>
+    <color name="sombra_surface_soft">#FFF4F2EC</color>
+    <color name="sombra_line">#FFE7E3DA</color>
+
+    <!-- Escala UV (OMS) -->
+    <color name="uv_low">#FF3AA655</color>        <!-- 0–2 -->
+    <color name="uv_moderate">#FFF2C61F</color>   <!-- 3–5 -->
+    <color name="uv_high">#FFF28A1B</color>       <!-- 6–7 -->
+    <color name="uv_very_high">#FFE0432B</color>  <!-- 8–10 -->
+    <color name="uv_extreme">#FF8D49C9</color>    <!-- 11+ -->
+
+    <!-- Céu do ecrã Início -->
+    <color name="sky_sun_top">#FF2F8EF0</color>
+    <color name="sky_sun_bottom">#FFBFE0FB</color>
+    <color name="sky_cloud_top">#FF6F8499</color>
+    <color name="sky_cloud_bottom">#FFCDD7E0</color>
+
+    <!-- Tipos de pele (Fitzpatrick I–VI), só para as amostras do onboarding -->
+    <color name="skin_1">#FFF7E1D0</color>
+    <color name="skin_2">#FFEECBB0</color>
+    <color name="skin_3">#FFD9A882</color>
+    <color name="skin_4">#FFB77C52</color>
+    <color name="skin_5">#FF8A5634</color>
+    <color name="skin_6">#FF4F3020</color>
+</resources>

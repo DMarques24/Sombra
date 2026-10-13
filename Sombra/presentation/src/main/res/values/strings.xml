@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reapply_button">Reapliquei</string>
+    <string name="home_error">Não conseguimos carregar o tempo</string>
+    <string name="home_offline">Sem internet · dados de há %1$dh</string>
+    <string name="home_offline_refresh">Atualizar</string>
+    <string name="home_error_description">Verifica a ligação à internet e tenta outra vez. O temporizador do protetor continua a funcionar.</string>
+    <string name="action_retry">Tenta outra vez</string>
+    <string name="forecast_title">Planear o dia</string>
+    <string name="forecast_today">Hoje</string>
+    <string name="forecast_uv_title">Índice UV por hora</string>
+    <string name="forecast_uv_now">agora: %1$d</string>
+    <string name="forecast_uv_bar_description">%1$d horas, UV %2$d</string>
+    <string name="uv_level_low">Baixo 0–2</string>
+    <string name="uv_level_moderate">Moderado 3–5</string>
+    <string name="uv_level_high">Alto 6–7</string>
+    <string name="uv_level_very_high">Muito alto 8–10</string>
+
+    <!-- Protetor (temporizador) -->
+    <string name="timer_title">Protetor</string>
+    <string name="timer_title_finished">Hora de reaplicar</string>
+    <string name="timer_subtitle_idle">Nenhum temporizador a decorrer.</string>
+    <string name="timer_subtitle_running">SPF %1$d aplicado às %2$s.</string>
+    <string name="timer_subtitle_finished">Passaram %1$d horas desde as %2$s.</string>
+    <string name="timer_ring_idle">horas até reaplicar</string>
+    <string name="timer_ring_running">até reaplicar</string>
+    <string name="timer_ring_finished">terminou há %1$d min</string>
+    <string name="timer_uv_now_title">UV %1$d agora</string>
+    <string name="timer_uv_recommendation">Para a tua pele recomendamos SPF %1$d.</string>
+    <string name="timer_uv_still_title">O UV ainda está em %1$d</string>
+    <string name="timer_uv_still_description">O protetor já não te está a proteger como antes.</string>
+    <string name="timer_spf_label">Fator que vais usar</string>
+    <string name="timer_water_title">Vou para a água</string>
+    <string name="timer_water_subtitle">Avisa ao fim de 40 min</string>
+    <string name="timer_stat_notify">Aviso às</string>
+    <string name="timer_stat_uv">UV agora</string>
+    <string name="timer_stat_water">Na água</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="timer_notify_hint">Recebes uma notificação quando chegar a hora.</string>
+    <string name="timer_auto_stop_hint">Sem resposta em %1$d min, o temporizador termina sozinho.</string>
+    <string name="timer_apply_button">Apliquei protetor agora</string>
+    <string name="timer_reapply_button">Reapliquei agora</string>
+    <string name="timer_reapply_xp_button">Reapliquei agora · +%1$d XP</string>
+    <string name="timer_left_sun_button">Já saí do sol</string>
+
+    <!-- Cartão do protetor no Início -->
+    <string name="timer_card_idle_title">Ainda sem protetor hoje</string>
+    <string name="timer_card_idle_subtitle">Regista e avisamos-te para reaplicar.</string>
+    <string name="timer_card_apply_button">Apliquei</string>
+    <string name="timer_card_running_title">Reaplicar em %1$s</string>
+    <string name="timer_card_running_subtitle">SPF %1$d aplicado às %2$s</string>
+    <string name="timer_card_remaining_hours">%1$dh %2$dm</string>
+    <string name="timer_card_remaining_minutes">%1$d min</string>
+    <string name="timer_card_finished_subtitle">Há %1$d min · UV ainda em %2$d</string>
+
+    <!-- Perfil -->
+    <string name="profile_settings">Definições</string>
+    <string name="profile_subtitle">Pele tipo %1$s · %2$s</string>
+    <string name="profile_level">Nível %1$d · %2$s</string>
+    <string name="profile_xp">%1$d / %2$d XP</string>
+    <string name="profile_next_level">Próximo: %1$s · %2$s</string>
+    <string name="profile_stat_streak">dias seguidos</string>
+    <string name="profile_stat_high_uv">dias de UV alto protegidos</string>
+    <string name="profile_stat_on_time">reaplicações a tempo</string>
+    <string name="profile_patches_title">Patches</string>
+    <string name="profile_patches_count">%1$d de %2$d</string>
+    <string name="profile_patch_locked">%1$s, bloqueado</string>
+
+    <!-- Níveis -->
+    <string name="level_hat">Chapéu</string>
+    <string name="level_parasol">Guarda-sol</string>
+    <string name="level_parasol_unlock">desbloqueia modo família</string>
+
+    <!-- Patches -->
+    <string name="patch_first_sunscreen">Primeiro protetor</string>
+    <string name="patch_spf_week">Semana SPF</string>
+    <string name="patch_reapplier">Reaplicador</string>
+    <string name="patch_shade_hour">Hora da sombra</string>
+    <string name="patch_hat_on_top">Chapéu no topo</string>
+    <string name="patch_extreme_uv">UV 11+</string>
+    <string name="patch_protected_summer">Verão protegido</string>
+    <string name="patch_family">Família</string>
+
+    <!-- Login -->
+    <string name="login_title">Bem-vindo de volta</string>
+    <string name="login_subtitle">Vê o UV de hoje antes de saíres.</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Palavra-passe</string>
+    <string name="login_forgot_password">Esqueci-me</string>
+    <string name="login_submit">Entrar</string>
+    <string name="login_or">ou</string>
+    <string name="login_apple">Apple</string>
+    <string name="login_google">Google</string>
+    <string name="login_no_account">Ainda não tens conta?</string>
+    <string name="login_create_account">Criar conta</string>
+
+    <!-- Criar conta -->
+    <string name="register_title">Cria a tua conta</string>
+    <string name="register_subtitle">Usamos a tua localização só para calcular o UV onde estás.</string>
+    <string name="register_name">Nome</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Palavra-passe</string>
+    <string name="register_city">Cidade</string>
+    <string name="register_use_location">Usar a minha localização</string>
+    <string name="register_continue">Continuar</string>
+    <string name="register_have_account">Já tens conta?</string>
+    <string name="register_login">Entrar</string>
+    <string name="register_step">Passo %1$d de %2$d</string>
+    <string name="password_weak">Fraca</string>
+    <string name="password_medium">Média</string>
+    <string name="password_strong">Forte</string>
+
+    <!-- Tipo de pele -->
+    <string name="skin_type_title">Como reage a tua pele ao sol?</string>
+    <string name="skin_type_subtitle">Isto muda em quantos minutos começas a queimar.</string>
+    <string name="skin_type_name">Tipo %1$s</string>
+    <string name="skin_type_1">Queima sempre</string>
+    <string name="skin_type_2">Queima fácil</string>
+    <string name="skin_type_3">Às vezes</string>
+    <string name="skin_type_4">Raramente</string>
+    <string name="skin_type_5">Muito raro</string>
+    <string name="skin_type_6">Quase nunca</string>
+    <string name="skin_type_places_title">ONDE PASSAS MAIS TEMPO AO SOL?</string>
+    <string name="sun_place_beach">Praia</string>
+    <string name="sun_place_outdoor_work">Trabalho ao ar livre</string>
+    <string name="sun_place_running">Corrida</string>
+    <string name="sun_place_city">Cidade</string>
+    <string name="sun_place_mountain">Montanha</string>
+    <string name="skin_type_skip">Saltar</string>
+    <string name="skin_type_next">Seguinte</string>
+    <plurals name="skin_type_selected_count">
+        <item quantity="one">%d escolhido</item>
+        <item quantity="other">%d escolhidos</item>
+    </plurals>
+</resources>
