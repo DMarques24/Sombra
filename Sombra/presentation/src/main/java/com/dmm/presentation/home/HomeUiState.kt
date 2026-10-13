@@ -5,7 +5,7 @@ sealed interface HomeUiState {
     data object Error : HomeUiState
     data class Content(
         val timerCard: TimerCardUiState,
-        val isOffline: Boolean = true,
+        val isOffline: Boolean = false,
         val hoursSinceUpdate: Int = 0,
         val updatedAt: String = "13:20",
         val isRefreshing: Boolean = false,
