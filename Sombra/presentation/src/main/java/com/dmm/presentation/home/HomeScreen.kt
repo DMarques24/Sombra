@@ -1,5 +1,7 @@
 package com.dmm.presentation.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,28 +40,40 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.shadow
 import com.dmm.presentation.home.component.InfoComponent
-import com.dmm.presentation.home.component.ReapplyComponent
+import com.dmm.presentation.home.component.TimerCard
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    onOpenTimer: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeContent(uiState = uiState)
+    HomeContent(
+        uiState = uiState,
+        onTimerAction = viewModel::onTimerAction,
+        onOpenTimer = onOpenTimer,
+    )
 }
 
 @Composable
-fun HomeContent(uiState: HomeUiState, modifier: Modifier = Modifier) {
+fun HomeContent(
+    uiState: HomeUiState,
+    onTimerAction: () -> Unit,
+    onOpenTimer: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(SombraColors.HomeGround)
-            .verticalScroll(rememberScrollState()), //ativa o scroll e lembra o scroll da pessoa
+            .verticalScroll(rememberScrollState()),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Brush.verticalGradient(SombraColors.SkySunny))
                 .statusBarsPadding()
-                // o espaço extra em baixo fica por trás do cartão, que sobe por cima do céu
                 .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 24.dp + 64.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -70,7 +84,7 @@ fun HomeContent(uiState: HomeUiState, modifier: Modifier = Modifier) {
             )
             Image(
                 painter = painterResource(R.drawable.weather_sol),
-                contentDescription = "Céu limpo",                     // lido pelos leitores de ecrã
+                contentDescription = "Céu limpo",
                 modifier = Modifier.size(230.dp),
             )
             Text(
@@ -114,11 +128,10 @@ fun HomeContent(uiState: HomeUiState, modifier: Modifier = Modifier) {
                 titleColor = SombraColors.OnRiskHighContainer,
                 descriptionColor = SombraColors.OnRiskHighContainer,
             )
-            ReapplyComponent(
-                title = "Reaplicar em 1h 12m",
-                description = "SPF 50 aplicado às 12:08",
-                progress = 0.6f,
-                onReapply = { /* TODO: registar no ViewModel */ },
+            TimerCard(
+                state = uiState.timerCard,
+                onAction = onTimerAction,
+                onOpen = onOpenTimer,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
             )
         }
@@ -129,6 +142,15 @@ fun HomeContent(uiState: HomeUiState, modifier: Modifier = Modifier) {
 @Composable
 private fun HomeContentPreview() {
     SombraTheme {
-        HomeContent(uiState = HomeUiState())
+        HomeContent(
+            uiState = HomeUiState(
+                timerCard = TimerCardUiState.Running(
+                    remainingHours = 1, remainingMinutes = 12,
+                    spf = 50, appliedAt = "12:08", progress = 0.6f,
+                ),
+            ),
+            onTimerAction = {},
+            onOpenTimer = {},
+        )
     }
 }

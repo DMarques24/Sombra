@@ -57,8 +57,7 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         ) {
             homeScreen(
-                // o que acontece quando o Início pede para abrir o tipo de pele
-                // onOpenSkinType = { navController.navigate(SkinTypeRoute) },
+                onOpenTimer = { navController.navigateToTopLevel(TopLevelDestination.TIMER) },
             )
             forecastScreen()
             timerScreen()

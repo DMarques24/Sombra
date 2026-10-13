@@ -39,6 +39,16 @@
     <string name="timer_reapply_xp_button">Reapliquei agora · +%1$d XP</string>
     <string name="timer_left_sun_button">Já saí do sol</string>
 
+    <!-- Cartão do protetor no Início -->
+    <string name="timer_card_idle_title">Ainda sem protetor hoje</string>
+    <string name="timer_card_idle_subtitle">Regista e avisamos-te para reaplicar.</string>
+    <string name="timer_card_apply_button">Apliquei</string>
+    <string name="timer_card_running_title">Reaplicar em %1$s</string>
+    <string name="timer_card_running_subtitle">SPF %1$d aplicado às %2$s</string>
+    <string name="timer_card_remaining_hours">%1$dh %2$dm</string>
+    <string name="timer_card_remaining_minutes">%1$d min</string>
+    <string name="timer_card_finished_subtitle">Há %1$d min · UV ainda em %2$d</string>
+
     <!-- Perfil -->
     <string name="profile_settings">Definições</string>
     <string name="profile_subtitle">Pele tipo %1$s · %2$s</string>
