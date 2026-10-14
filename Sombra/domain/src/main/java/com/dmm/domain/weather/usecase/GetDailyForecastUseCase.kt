@@ -2,6 +2,8 @@ package com.dmm.domain.weather.usecase
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.dmm.domain.model.DomainResult
+import com.dmm.domain.model.map
 import com.dmm.domain.weather.model.DailyForecast
 import com.dmm.domain.weather.repository.WeatherRepository
 import java.time.LocalDate
@@ -17,8 +19,10 @@ class GetDailyForecastUseCase @Inject constructor(
         longitude: Double,
         date: LocalDate,
         days: Int = 3,
-    ): List<DailyForecast> =
-        repository.getForecast(latitude, longitude).daily
-            .filter { it.date.isAfter(date) }
-            .take(days)
+    ): DomainResult<List<DailyForecast>> =
+        repository.getForecast(latitude, longitude).map { forecast ->
+            forecast.daily
+                .filter { it.date.isAfter(date) }
+                .take(days)
+        }
 }

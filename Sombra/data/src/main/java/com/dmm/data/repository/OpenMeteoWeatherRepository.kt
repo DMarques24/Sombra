@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.dmm.data.mapper.toDomain
 import com.dmm.data.remote.OpenMeteoApi
+import com.dmm.data.remote.safeApiCall
+import com.dmm.domain.model.DomainResult
 import com.dmm.domain.weather.model.Forecast
 import com.dmm.domain.weather.repository.WeatherRepository
 import java.time.Clock
@@ -16,6 +18,8 @@ class OpenMeteoWeatherRepository @RequiresApi(Build.VERSION_CODES.O)
 ) : WeatherRepository {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getForecast(latitude: Double, longitude: Double): Forecast =
-        api.getForecast(latitude, longitude).toDomain(fetchedAt = clock.instant())
+    override suspend fun getForecast(latitude: Double, longitude: Double): DomainResult<Forecast> =
+        safeApiCall {
+            api.getForecast(latitude, longitude).toDomain(fetchedAt = clock.instant())
+        }
 }

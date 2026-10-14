@@ -1,11 +1,12 @@
 package com.dmm.presentation.home
 
+import com.dmm.domain.model.DataError
 import com.dmm.domain.weather.model.UvLevel
 import com.dmm.domain.weather.model.WeatherCondition
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState
-    data object Error : HomeUiState
+    data class Error(val error: DataError) : HomeUiState
     data class Content(
         val weather: HomeWeatherUiState,
         val timerCard: TimerCardUiState,

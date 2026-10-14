@@ -39,6 +39,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraTopBar
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.domain.model.DataError
+import com.dmm.presentation.common.descriptionRes
+import com.dmm.presentation.common.titleRes
 import com.dmm.domain.weather.model.UvLevel
 import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.R
@@ -82,7 +85,7 @@ fun HomeScreen(
                 onRefresh = viewModel::onRefresh,
                 onOpenTimer = onOpenTimer,
             )
-            HomeUiState.Error -> HomeError(onRetry = viewModel::onRetry)
+            is HomeUiState.Error -> HomeError(error = state.error, onRetry = viewModel::onRetry)
         }
     }
 }
@@ -172,6 +175,7 @@ fun HomeLoading(modifier: Modifier = Modifier) {
 
 @Composable
 private fun HomeError(
+    error: DataError,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -193,14 +197,14 @@ private fun HomeError(
                 modifier = Modifier.size(160.dp),
             )
             Text(
-                text = stringResource(R.string.home_error),
+                text = stringResource(error.titleRes),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = SombraColors.Text,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = stringResource(R.string.home_error_description),
+                text = stringResource(error.descriptionRes) + " " + stringResource(R.string.home_error_timer_hint),
                 style = MaterialTheme.typography.bodyLarge,
                 color = SombraColors.TextMuted,
                 textAlign = TextAlign.Center,
@@ -283,5 +287,5 @@ private fun HomeLoadingPreview() {
 @Preview(showBackground = true, name = "Início · erro")
 @Composable
 private fun HomeErrorPreview() {
-    SombraTheme { HomeError(onRetry = {}) }
+    SombraTheme { HomeError(error = DataError.NoConnection, onRetry = {}) }
 }

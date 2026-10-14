@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmm.domain.sunscreen.repository.SunscreenRepository
+import com.dmm.domain.model.DataError
+import com.dmm.domain.model.DomainResult
 import com.dmm.domain.sunscreen.usecase.ObserveTimerStatusUseCase
 import com.dmm.domain.weather.usecase.GetCurrentWeatherUseCase
 import com.dmm.presentation.home.mapper.toHomeWeather
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -39,17 +42,24 @@ class HomeViewModel @RequiresApi(Build.VERSION_CODES.O)
         retryTrigger
             .flatMapLatest {
                 // Pede o tempo uma vez; depois o timer continua a atualizar o ecrã a cada segundo
-                flow { emit(getCurrentWeather(LATITUDE, LONGITUDE).toHomeWeather()) }
-                    .flatMapLatest { weather ->
-                        observeTimerStatus().map<_, HomeUiState> { status ->
-                            HomeUiState.Content(
-                                weather = weather,
-                                timerCard = status.toCard(uvNow = weather.uvIndex),
-                            )
+                flow { emit(getCurrentWeather(LATITUDE, LONGITUDE)) }
+                    .flatMapLatest { result ->
+                        when (result) {
+                            is DomainResult.Failure -> flowOf(HomeUiState.Error(result.error))
+                            is DomainResult.Success -> {
+                                val weather = result.data.toHomeWeather()
+                                observeTimerStatus().map<_, HomeUiState> { status ->
+                                    HomeUiState.Content(
+                                        weather = weather,
+                                        timerCard = status.toCard(uvNow = weather.uvIndex),
+                                    )
+                                }
+                            }
                         }
                     }
                     .onStart { emit(HomeUiState.Loading) }
-                    .catch { emit(HomeUiState.Error) }
+                    // Rede de segurança: os erros da API já chegam como DomainResult.Failure
+                    .catch { emit(HomeUiState.Error(DataError.Unknown)) }
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState.Loading)
 

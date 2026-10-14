@@ -1,11 +1,12 @@
 package com.dmm.presentation.forecast
 
+import com.dmm.domain.model.DataError
 import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.forecast.component.HourlyUv
 
 sealed interface ForecastUiState {
     data object Loading : ForecastUiState
-    data object Error : ForecastUiState
+    data class Error(val error: DataError) : ForecastUiState
     data class Content(
         val hourly: List<HourlyUv>,
         val currentHour: Int,

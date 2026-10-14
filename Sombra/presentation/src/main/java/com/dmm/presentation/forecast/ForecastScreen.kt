@@ -33,7 +33,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.dmm.domain.model.DataError
 import com.dmm.domain.weather.model.WeatherCondition
+import com.dmm.presentation.common.descriptionRes
+import com.dmm.presentation.common.titleRes
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,7 +58,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     when (val state = uiState) {
         ForecastUiState.Loading -> ForecastLoading()
-        ForecastUiState.Error -> ForecastError(onRetry = viewModel::onRetry)
+        is ForecastUiState.Error -> ForecastError(error = state.error, onRetry = viewModel::onRetry)
         is ForecastUiState.Content -> ForecastContent(state)
     }
 }
@@ -68,7 +71,7 @@ private fun ForecastLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ForecastError(onRetry: () -> Unit, modifier: Modifier = Modifier) {
+private fun ForecastError(error: DataError, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -77,10 +80,16 @@ private fun ForecastError(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
     ) {
         Text(
-            text = stringResource(R.string.home_error),
+            text = stringResource(error.titleRes),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = SombraColors.Text,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = stringResource(error.descriptionRes),
+            style = MaterialTheme.typography.bodyLarge,
+            color = SombraColors.TextMuted,
             textAlign = TextAlign.Center,
         )
         SombraDarkButton(

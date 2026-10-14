@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dmm.domain.model.DataError
+import com.dmm.domain.model.DomainResult
 import com.dmm.domain.weather.model.DailyForecast
 import com.dmm.domain.weather.usecase.GetDailyForecastUseCase
 import com.dmm.domain.weather.usecase.GetHourlyUvUseCase
@@ -44,8 +46,15 @@ class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
             .flatMapLatest {
                 flow<ForecastUiState> {
                     val now = LocalDateTime.now(clock)
-                    val hours = getHourlyUv(LATITUDE, LONGITUDE, now.toLocalDate())
-                    val days = getDailyForecastUseCase(LATITUDE, LONGITUDE, now.toLocalDate())
+                    // Se algum dos pedidos falhar, mostra o erro e pára aqui
+                    val hours = when (val result = getHourlyUv(LATITUDE, LONGITUDE, now.toLocalDate())) {
+                        is DomainResult.Success -> result.data
+                        is DomainResult.Failure -> return@flow emit(ForecastUiState.Error(result.error))
+                    }
+                    val days = when (val result = getDailyForecastUseCase(LATITUDE, LONGITUDE, now.toLocalDate())) {
+                        is DomainResult.Success -> result.data
+                        is DomainResult.Failure -> return@flow emit(ForecastUiState.Error(result.error))
+                    }
                     emit(
                         ForecastUiState.Content(
                             hourly = hours
@@ -65,7 +74,8 @@ class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
                     )
                 }
                     .onStart { emit(ForecastUiState.Loading) }
-                    .catch { emit(ForecastUiState.Error) }
+                    // Rede de segurança: os erros da API já chegam como DomainResult.Failure
+                    .catch { emit(ForecastUiState.Error(DataError.Unknown)) }
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ForecastUiState.Loading)
 

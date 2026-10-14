@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="reapply_button">Reapliquei</string>
-    <string name="home_error">Não conseguimos carregar o tempo</string>
     <string name="home_offline">Sem internet · dados de há %1$dh</string>
     <string name="home_offline_refresh">Atualizar</string>
-    <string name="home_error_description">Verifica a ligação à internet e tenta outra vez. O temporizador do protetor continua a funcionar.</string>
     <string name="action_retry">Tenta outra vez</string>
+
+    <!-- Erros -->
+    <string name="error_no_connection_title">Sem ligação à internet</string>
+    <string name="error_no_connection_description">Verifica o Wi-Fi ou os dados móveis e tenta outra vez.</string>
+    <string name="error_server_title">O serviço do tempo está em baixo</string>
+    <string name="error_server_description">O problema não é teu. Tenta outra vez daqui a uns minutos.</string>
+    <string name="error_unknown_title">Algo correu mal</string>
+    <string name="error_unknown_description">Não conseguimos carregar o tempo. Tenta outra vez.</string>
+    <string name="home_error_timer_hint">O temporizador do protetor continua a funcionar.</string>
     <string name="forecast_title">Planear o dia</string>
     <string name="forecast_today">Hoje</string>
     <string name="forecast_uv_title">Índice UV por hora</string>
