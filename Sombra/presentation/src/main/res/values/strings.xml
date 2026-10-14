@@ -12,6 +12,11 @@
     <string name="error_server_description">O problema não é teu. Tenta outra vez daqui a uns minutos.</string>
     <string name="error_unknown_title">Algo correu mal</string>
     <string name="error_unknown_description">Não conseguimos carregar o tempo. Tenta outra vez.</string>
+    <string name="home_location_current">A tua localização</string>
+    <string name="home_location_title">Estás a ver o tempo de Coimbra</string>
+    <string name="home_location_description">Ativa a localização para veres o UV onde estás.</string>
+    <string name="home_location_allow">Permitir localização</string>
+    <string name="home_location_open_settings">Abrir definições</string>
     <string name="home_error_timer_hint">O temporizador do protetor continua a funcionar.</string>
     <string name="forecast_title">Planear o dia</string>
     <string name="forecast_today">Hoje</string>

@@ -1,7 +1,5 @@
 package com.dmm.presentation.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -39,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraTopBar
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
-import com.dmm.domain.model.DataError
+import com.dmm.domain.common.DataError
 import com.dmm.presentation.common.descriptionRes
 import com.dmm.presentation.common.titleRes
 import com.dmm.domain.weather.model.UvLevel
@@ -51,8 +49,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import com.dmm.core.components.LocationPermissionStatus
 import com.dmm.core.components.SombraDarkButton
+import com.dmm.core.components.hasLocationPermission
+import com.dmm.core.components.openAppSettings
+import com.dmm.core.components.rememberLocationPermissionRequest
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.dmm.presentation.home.component.LocationPromptCard
 import com.dmm.presentation.home.component.HomeCardSkeleton
 import com.dmm.presentation.home.component.HomeSkySkeleton
 import com.dmm.presentation.home.component.InfoComponent
@@ -63,13 +68,27 @@ import com.dmm.presentation.home.mapper.imageRes
 import com.dmm.presentation.home.mapper.label
 import com.dmm.presentation.home.mapper.onColor
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     onOpenTimer: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val requestPermission = rememberLocationPermissionRequest { status ->
+        viewModel.onLocationPermissionResult(status)
+    }
+    // Corre ao abrir o ecrã e sempre que a app volta ao primeiro plano:
+    // assim, se a pessoa ativou a localização nas definições, o tempo atualiza sozinho
+    LifecycleResumeEffect(Unit) {
+        when {
+            context.hasLocationPermission() ->
+                viewModel.onLocationPermissionResult(LocationPermissionStatus.Granted)
+            viewModel.shouldAskForLocation() -> requestPermission()
+        }
+        onPauseOrDispose { }
+    }
 
     AnimatedContent(
         targetState = uiState,
@@ -84,7 +103,15 @@ fun HomeScreen(
                 onTimerAction = viewModel::onTimerAction,
                 onRefresh = viewModel::onRefresh,
                 onOpenTimer = onOpenTimer,
+                onLocationPromptClick = {
+                    when (state.locationPrompt) {
+                        LocationPrompt.AskAgain -> requestPermission()
+                        LocationPrompt.OpenSettings -> context.openAppSettings()
+                        LocationPrompt.None -> Unit
+                    }
+                },
             )
+
             is HomeUiState.Error -> HomeError(error = state.error, onRetry = viewModel::onRetry)
         }
     }
@@ -97,12 +124,13 @@ fun HomeContent(
     onRefresh: () -> Unit,
     onOpenTimer: () -> Unit,
     modifier: Modifier = Modifier,
+    onLocationPromptClick: () -> Unit = {},
 ) {
     HomeLayout(
         modifier = modifier,
         sky = {
             SombraTopBar(
-                title = "Coimbra",
+                title = if (uiState.isDefaultLocation) "Coimbra" else stringResource(R.string.home_location_current),
                 subtitle = "Hoje, 13:20",
                 onNotificationsClick = { /* TODO: abrir notificações */ },
             )
@@ -147,6 +175,15 @@ fun HomeContent(
             )
         },
         card = {
+            if (uiState.locationPrompt != LocationPrompt.None) {
+                LocationPromptCard(
+                    buttonText = stringResource(
+                        if (uiState.locationPrompt == LocationPrompt.OpenSettings) R.string.home_location_open_settings
+                        else R.string.home_location_allow
+                    ),
+                    onClick = onLocationPromptClick,
+                )
+            }
             InfoComponent(
                 title = "Queimas em ~15 min sem protetor",
                 description = "Pele tipo II. Procura sombra entre as 12h e as 16h.",

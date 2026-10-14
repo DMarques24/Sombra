@@ -1,6 +1,6 @@
 package com.dmm.presentation.forecast
 
-import com.dmm.domain.model.DataError
+import com.dmm.domain.common.DataError
 import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.forecast.component.HourlyUv
 

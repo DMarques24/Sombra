@@ -1,9 +1,9 @@
 package com.dmm.data.di
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.dmm.data.repository.FusedLocationRepository
 import com.dmm.data.repository.InMemorySunscreenRepository
 import com.dmm.data.repository.OpenMeteoWeatherRepository
+import com.dmm.domain.location.repository.LocationRepository
 import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import com.dmm.domain.weather.repository.WeatherRepository
 import dagger.Binds
@@ -24,8 +24,10 @@ abstract class DataModule {
     @Binds @Singleton
     abstract fun bindWeatherRepository(impl: OpenMeteoWeatherRepository): WeatherRepository
 
+    @Binds @Singleton
+    abstract fun bindLocationRepository(impl: FusedLocationRepository): LocationRepository
+
     companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
         @Provides @Singleton
         fun provideClock(): Clock = Clock.systemDefaultZone()
     }

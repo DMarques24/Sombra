@@ -1,7 +1,7 @@
 package com.dmm.presentation.common
 
 import androidx.annotation.StringRes
-import com.dmm.domain.model.DataError
+import com.dmm.domain.common.DataError
 import com.dmm.presentation.R
 
 // Cada erro do domínio tem o seu título e descrição. Usado em todos os ecrãs de erro

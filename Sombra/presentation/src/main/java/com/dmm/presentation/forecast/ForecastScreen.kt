@@ -1,7 +1,5 @@
 package com.dmm.presentation.forecast
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,7 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.dmm.domain.model.DataError
+import com.dmm.domain.common.DataError
 import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.common.descriptionRes
 import com.dmm.presentation.common.titleRes
@@ -52,7 +50,6 @@ import com.dmm.presentation.forecast.component.InfoCard
 import com.dmm.presentation.forecast.component.UvDayCard
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

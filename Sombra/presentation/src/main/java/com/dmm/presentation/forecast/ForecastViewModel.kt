@@ -1,14 +1,13 @@
 package com.dmm.presentation.forecast
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dmm.domain.model.DataError
-import com.dmm.domain.model.DomainResult
+import com.dmm.domain.location.model.Coordinates
+import com.dmm.domain.location.repository.LocationRepository
+import com.dmm.domain.common.DataError
+import com.dmm.domain.common.DomainResult
 import com.dmm.domain.weather.model.DailyForecast
-import com.dmm.domain.weather.usecase.GetDailyForecastUseCase
-import com.dmm.domain.weather.usecase.GetHourlyUvUseCase
+import com.dmm.domain.weather.usecase.GetUvForecastUseCase
 import com.dmm.presentation.forecast.component.HourlyUv
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,10 +28,9 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @HiltViewModel
-class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
-@Inject constructor(
-    getHourlyUv: GetHourlyUvUseCase,
-    getDailyForecastUseCase: GetDailyForecastUseCase,
+class ForecastViewModel @Inject constructor(
+    getUvForecast: GetUvForecastUseCase,
+    locationRepository: LocationRepository,
     clock: Clock,
 ) : ViewModel() {
 
@@ -40,21 +38,20 @@ class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
     private val retryTrigger = MutableStateFlow(0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    @RequiresApi(Build.VERSION_CODES.O)
     val uiState: StateFlow<ForecastUiState> =
         retryTrigger
             .flatMapLatest {
                 flow<ForecastUiState> {
                     val now = LocalDateTime.now(clock)
-                    // Se algum dos pedidos falhar, mostra o erro e pára aqui
-                    val hours = when (val result = getHourlyUv(LATITUDE, LONGITUDE, now.toLocalDate())) {
+                    // A permissão é pedida no Início; aqui só se usa (ou Coimbra se não houver)
+                    val (latitude, longitude) = locationRepository.getCurrentLocation() ?: Coordinates.Default
+                    // Se o pedido falhar, mostra o erro e pára aqui
+                    val forecast = when (val result = getUvForecast(latitude, longitude, now.toLocalDate())) {
                         is DomainResult.Success -> result.data
                         is DomainResult.Failure -> return@flow emit(ForecastUiState.Error(result.error))
                     }
-                    val days = when (val result = getDailyForecastUseCase(LATITUDE, LONGITUDE, now.toLocalDate())) {
-                        is DomainResult.Success -> result.data
-                        is DomainResult.Failure -> return@flow emit(ForecastUiState.Error(result.error))
-                    }
+                    val hours = forecast.hourly
+                    val days = forecast.nextDays
                     emit(
                         ForecastUiState.Content(
                             hourly = hours
@@ -84,7 +81,6 @@ class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
     }
 
     // Amanhã fica "Amanhã"; os outros dias ficam abreviados: "Sáb", "Dom"
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun DailyForecast.toDayUiState(today: LocalDate) = ForecastDayUiState(
         label = if (date == today.plusDays(1)) {
             "Amanhã"
@@ -96,14 +92,9 @@ class ForecastViewModel @RequiresApi(Build.VERSION_CODES.O)
     )
 
     private companion object {
-        // TODO: trocar pela localização do utilizador. Por agora fica Coimbra
-        const val LATITUDE = 40.2033
-        const val LONGITUDE = -8.4103
-
         // O gráfico só mostra as horas com sol (8h às 19h)
         val CHART_HOURS = 8..19
 
-        @RequiresApi(Build.VERSION_CODES.O)
         val DAY_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE", Locale("pt", "PT"))
     }
 }

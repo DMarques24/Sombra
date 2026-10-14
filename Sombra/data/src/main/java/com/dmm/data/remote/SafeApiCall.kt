@@ -1,7 +1,7 @@
 package com.dmm.data.remote
 
-import com.dmm.domain.model.DataError
-import com.dmm.domain.model.DomainResult
+import com.dmm.domain.common.DataError
+import com.dmm.domain.common.DomainResult
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.CancellationException

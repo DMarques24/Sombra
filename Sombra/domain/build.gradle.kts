@@ -1,31 +1,23 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+// Módulo Kotlin puro: as regras de negócio não conhecem o Android
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.jvm)
 }
 
-android {
-    namespace = "com.dmm.domain"
-    compileSdk {
-        version = release(37)
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
-    defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.material)
+    // api: o Flow faz parte das interfaces públicas (ex.: SunscreenRepository)
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
 }

@@ -1,6 +1,6 @@
 package com.dmm.presentation.home
 
-import com.dmm.domain.model.DataError
+import com.dmm.domain.common.DataError
 import com.dmm.domain.weather.model.UvLevel
 import com.dmm.domain.weather.model.WeatherCondition
 
@@ -14,6 +14,8 @@ sealed interface HomeUiState {
         val hoursSinceUpdate: Int = 0,
         val updatedAt: String = "13:20",
         val isRefreshing: Boolean = false,
+        val isDefaultLocation: Boolean = false,
+        val locationPrompt: LocationPrompt = LocationPrompt.None,
     ) : HomeUiState
 }
 
@@ -38,4 +40,11 @@ sealed interface TimerCardUiState {
     ) : TimerCardUiState
 
     data class Finished(val overdueMinutes: Int, val uvNow: Int) : TimerCardUiState
+}
+
+// Cartão que pede a localização quando a pessoa recusou a permissão
+enum class LocationPrompt {
+    None,           // tem permissão: não mostra nada
+    AskAgain,       // recusou uma vez: o botão volta a perguntar
+    OpenSettings,   // "não voltar a perguntar": o botão abre as definições da app
 }

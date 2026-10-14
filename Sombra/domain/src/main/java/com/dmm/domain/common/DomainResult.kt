@@ -1,8 +1,4 @@
-package com.dmm.domain.model
-
-// Os erros que a app sabe tratar. O :domain não sabe nada de Ktor nem de HTTP:
-// é o :data que traduz as exceções para isto (ver safeApiCall)
-enum class DataError { NoConnection, Server, Unknown }
+package com.dmm.domain.common
 
 // Resultado de uma operação que pode falhar: ou traz os dados, ou traz o erro.
 // Assim o erro faz parte do tipo e o compilador obriga a tratá-lo

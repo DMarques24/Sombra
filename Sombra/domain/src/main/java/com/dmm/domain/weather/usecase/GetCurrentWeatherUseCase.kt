@@ -1,7 +1,7 @@
 package com.dmm.domain.weather.usecase
 
-import com.dmm.domain.model.DomainResult
-import com.dmm.domain.model.map
+import com.dmm.domain.common.DomainResult
+import com.dmm.domain.common.map
 import com.dmm.domain.weather.model.CurrentWeather
 import com.dmm.domain.weather.repository.WeatherRepository
 import javax.inject.Inject

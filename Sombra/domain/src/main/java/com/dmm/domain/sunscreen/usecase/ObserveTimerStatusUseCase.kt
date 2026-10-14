@@ -1,7 +1,5 @@
 package com.dmm.domain.sunscreen.usecase
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.dmm.domain.sunscreen.model.TimerStatus
 import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import kotlinx.coroutines.delay
@@ -13,12 +11,10 @@ import java.time.Clock
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-class ObserveTimerStatusUseCase @RequiresApi(Build.VERSION_CODES.O)
-@Inject constructor(
+class ObserveTimerStatusUseCase @Inject constructor(
     private val repository: SunscreenRepository,
     private val clock: Clock,
 ) {
-    @RequiresApi(Build.VERSION_CODES.O)
     operator fun invoke(): Flow<TimerStatus> =
         combine(repository.observeActiveSession(), everySecond()) { session, _ ->
             if (session == null) return@combine TimerStatus.Idle
@@ -38,7 +34,6 @@ class ObserveTimerStatusUseCase @RequiresApi(Build.VERSION_CODES.O)
     }
 
     private companion object {
-        @RequiresApi(Build.VERSION_CODES.O)
         val AUTO_STOP: Duration = Duration.ofMinutes(30)
     }
 }
