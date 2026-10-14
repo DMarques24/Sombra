@@ -39,6 +39,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraTopBar
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.domain.weather.model.UvLevel
+import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.R
 import com.dmm.presentation.home.component.TempDetailsComponent
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +55,10 @@ import com.dmm.presentation.home.component.HomeSkySkeleton
 import com.dmm.presentation.home.component.InfoComponent
 import com.dmm.presentation.home.component.OfflineBanner
 import com.dmm.presentation.home.component.TimerCard
+import com.dmm.presentation.home.mapper.color
+import com.dmm.presentation.home.mapper.imageRes
+import com.dmm.presentation.home.mapper.label
+import com.dmm.presentation.home.mapper.onColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -105,13 +111,14 @@ fun HomeContent(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
+            val weather = uiState.weather
             Image(
-                painter = painterResource(R.drawable.weather_sol),
-                contentDescription = "Céu limpo",
+                painter = painterResource(weather.imageRes()),
+                contentDescription = weather.condition.label,
                 modifier = Modifier.size(230.dp),
             )
             Text(
-                text = "27°",
+                text = "${weather.temperature}°",
                 modifier = Modifier.offset(y = (-24).dp),
                 style = TextStyle(
                     fontSize = 96.sp,
@@ -122,7 +129,7 @@ fun HomeContent(
                 color = SombraColors.OnSky,
             )
             Text(
-                text = "Céu limpo · máx 29° mín 16°",
+                text = "${weather.condition.label} · sensação ${weather.feelsLike}°",
                 modifier = Modifier.offset(y = (-16).dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
@@ -130,8 +137,10 @@ fun HomeContent(
             )
             Spacer(Modifier.height(4.dp))
             TempDetailsComponent(
-                uvNumber = "UV 8",
-                description = "Muito alto até às 16h",
+                uvNumber = "UV ${weather.uvIndex}",
+                description = weather.uvLevel.label,
+                uvColor = weather.uvLevel.color,
+                onUvColor = weather.uvLevel.onColor,
             )
         },
         card = {
@@ -246,6 +255,11 @@ private fun HomeContentPreview() {
     SombraTheme {
         HomeContent(
             uiState = HomeUiState.Content(
+                weather = HomeWeatherUiState(
+                    temperature = 27, feelsLike = 28,
+                    condition = WeatherCondition.Clear, isDay = true,
+                    uvIndex = 8, uvLevel = UvLevel.VeryHigh,
+                ),
                 timerCard = TimerCardUiState.Running(
                     remainingHours = 1, remainingMinutes = 12,
                     spf = 50, appliedAt = "12:08", progress = 0.6f,

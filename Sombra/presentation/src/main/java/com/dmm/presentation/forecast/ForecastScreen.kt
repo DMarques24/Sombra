@@ -1,5 +1,14 @@
 package com.dmm.presentation.forecast
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.dmm.core.components.SombraDarkButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +17,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AcUnit
 import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Thunderstorm
+import androidx.compose.material.icons.rounded.Umbrella
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.dmm.domain.weather.model.WeatherCondition
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,14 +49,49 @@ import com.dmm.presentation.forecast.component.InfoCard
 import com.dmm.presentation.forecast.component.UvDayCard
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ForecastContent(uiState)
+    when (val state = uiState) {
+        ForecastUiState.Loading -> ForecastLoading()
+        ForecastUiState.Error -> ForecastError(onRetry = viewModel::onRetry)
+        is ForecastUiState.Content -> ForecastContent(state)
+    }
 }
 
 @Composable
-fun ForecastContent(uiState: ForecastUiState, modifier: Modifier = Modifier) {
+private fun ForecastLoading(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(color = SombraColors.SkyBlue)
+    }
+}
+
+@Composable
+private fun ForecastError(onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+    ) {
+        Text(
+            text = stringResource(R.string.home_error),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = SombraColors.Text,
+            textAlign = TextAlign.Center,
+        )
+        SombraDarkButton(
+            text = stringResource(R.string.action_retry),
+            onClick = onRetry,
+        )
+    }
+}
+
+@Composable
+fun ForecastContent(uiState: ForecastUiState.Content, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,12 +107,10 @@ fun ForecastContent(uiState: ForecastUiState, modifier: Modifier = Modifier) {
             onSelectDayClick = { /* TODO: abrir o seletor de dia */ },
         )
         Spacer(Modifier.height(20.dp))
-        // TODO: dados de exemplo, trocar pelos do ForecastUiState quando houver API
         HourlyUvCard(
-            hourly = listOf(1, 2, 4, 6, 8, 9, 9, 7, 5, 3, 2, 1)
-                .mapIndexed { i, uv -> HourlyUv(hour = 8 + i, uvIndex = uv) },
-            currentHour = 13,
-            currentUv = 8,
+            hourly = uiState.hourly,
+            currentHour = uiState.currentHour,
+            currentUv = uiState.currentUv,
         )
         Spacer(Modifier.height(16.dp))
         InfoCard(
@@ -73,21 +120,15 @@ fun ForecastContent(uiState: ForecastUiState, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.height(16.dp))
-        // TODO: dados de exemplo, trocar pelos do ForecastUiState quando houver API
-        val days = listOf(
-            Triple("Amanhã", 8, Icons.Rounded.WbSunny),
-            Triple("Sáb", 5, Icons.Rounded.Cloud),
-            Triple("Dom", 7, Icons.Rounded.WbSunny),
-        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(28.dp))
                 .padding(horizontal = 20.dp, vertical = 6.dp),
         ) {
-            days.forEachIndexed { index, (day, uv, icon) ->
+            uiState.days.forEachIndexed { index, day ->
                 if (index > 0) HorizontalDivider(color = SombraColors.Line)
-                UvDayCard(day = day, uvLevel = uv, icon = icon)
+                UvDayCard(day = day.label, uvLevel = day.uvIndex, icon = day.condition.icon)
             }
         }
     }
@@ -97,7 +138,27 @@ fun ForecastContent(uiState: ForecastUiState, modifier: Modifier = Modifier) {
 @Composable
 private fun ForecastContentPreview() {
     SombraTheme {
-        ForecastContent(uiState = ForecastUiState())
+        ForecastContent(
+            uiState = ForecastUiState.Content(
+                hourly = listOf(1, 2, 4, 6, 8, 9, 9, 7, 5, 3, 2, 1)
+                    .mapIndexed { i, uv -> HourlyUv(hour = 8 + i, uvIndex = uv) },
+                currentHour = 13,
+                currentUv = 8,
+                days = listOf(
+                    ForecastDayUiState("Amanhã", uvIndex = 8, condition = WeatherCondition.Clear),
+                    ForecastDayUiState("Sáb", uvIndex = 5, condition = WeatherCondition.Cloudy),
+                    ForecastDayUiState("Dom", uvIndex = 7, condition = WeatherCondition.Clear),
+                ),
+            ),
+        )
     }
 }
 
+private val WeatherCondition.icon: ImageVector
+    get() = when (this) {
+        WeatherCondition.Clear, WeatherCondition.PartlyCloudy -> Icons.Rounded.WbSunny
+        WeatherCondition.Cloudy, WeatherCondition.Fog -> Icons.Rounded.Cloud
+        WeatherCondition.Rain -> Icons.Rounded.Umbrella
+        WeatherCondition.Snow -> Icons.Rounded.AcUnit
+        WeatherCondition.Storm -> Icons.Rounded.Thunderstorm
+    }

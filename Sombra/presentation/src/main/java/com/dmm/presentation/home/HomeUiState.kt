@@ -1,9 +1,13 @@
 package com.dmm.presentation.home
 
+import com.dmm.domain.weather.model.UvLevel
+import com.dmm.domain.weather.model.WeatherCondition
+
 sealed interface HomeUiState {
     data object Loading : HomeUiState
     data object Error : HomeUiState
     data class Content(
+        val weather: HomeWeatherUiState,
         val timerCard: TimerCardUiState,
         val isOffline: Boolean = false,
         val hoursSinceUpdate: Int = 0,
@@ -12,6 +16,15 @@ sealed interface HomeUiState {
     ) : HomeUiState
 }
 
+// O tempo de agora, já arredondado para o ecrã
+data class HomeWeatherUiState(
+    val temperature: Int,
+    val feelsLike: Int,
+    val condition: WeatherCondition,
+    val isDay: Boolean,
+    val uvIndex: Int,
+    val uvLevel: UvLevel,
+)
 
 sealed interface TimerCardUiState {
     data object Idle : TimerCardUiState
