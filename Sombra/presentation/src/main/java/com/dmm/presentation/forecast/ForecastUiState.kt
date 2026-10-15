@@ -23,15 +23,23 @@ sealed interface ForecastUiState {
     }
 }
 
+// Como se chama um dia no ecrã. A ViewModel só diz qual é; o texto ("Hoje", "Sáb")
+// é escolhido no composable, com as strings e a língua do telemóvel
+sealed interface DayLabel {
+    data object Today : DayLabel
+    data object Tomorrow : DayLabel
+    data class Weekday(val date: LocalDate) : DayLabel
+}
+
 // Uma linha da lista dos próximos dias: "Amanhã", "Sáb", "Dom"
 data class ForecastDayUiState(
-    val label: String,
+    val label: DayLabel,
     val uvIndex: Int,
     val condition: WeatherCondition,
 )
 
 // Uma opção do seletor de dia ("Hoje", "Amanhã", "Sáb"...)
-data class ForecastDayOption(val date: LocalDate, val label: String)
+data class ForecastDayOption(val date: LocalDate, val label: DayLabel)
 
 // "Melhor hora para correr": antes e depois das horas de UV 3 ou mais
 data class BestTimeUiState(

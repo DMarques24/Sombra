@@ -1,6 +1,7 @@
 package com.dmm.presentation.home.mapper
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.domain.weather.model.CurrentWeather
@@ -20,15 +21,16 @@ internal fun CurrentWeather.toHomeWeather(): HomeWeatherUiState = HomeWeatherUiS
     uvLevel = uvLevel,
 )
 
-internal val WeatherCondition.label: String
+@get:StringRes
+internal val WeatherCondition.labelRes: Int
     get() = when (this) {
-        WeatherCondition.Clear -> "Céu limpo"
-        WeatherCondition.PartlyCloudy -> "Pouco nublado"
-        WeatherCondition.Cloudy -> "Nublado"
-        WeatherCondition.Fog -> "Nevoeiro"
-        WeatherCondition.Rain -> "Chuva"
-        WeatherCondition.Snow -> "Neve"
-        WeatherCondition.Storm -> "Trovoada"
+        WeatherCondition.Clear -> R.string.weather_clear
+        WeatherCondition.PartlyCloudy -> R.string.weather_partly_cloudy
+        WeatherCondition.Cloudy -> R.string.weather_cloudy
+        WeatherCondition.Fog -> R.string.weather_fog
+        WeatherCondition.Rain -> R.string.weather_rain
+        WeatherCondition.Snow -> R.string.weather_snow
+        WeatherCondition.Storm -> R.string.weather_storm
     }
 
 // À noite, céu limpo ou pouco nublado mostra a lua
@@ -40,13 +42,14 @@ internal fun HomeWeatherUiState.imageRes(): Int = when (condition) {
     WeatherCondition.Rain, WeatherCondition.Snow, WeatherCondition.Storm -> R.drawable.weather_chuva
 }
 
-internal val UvLevel.label: String
+@get:StringRes
+internal val UvLevel.labelRes: Int
     get() = when (this) {
-        UvLevel.Low -> "Baixo"
-        UvLevel.Moderate -> "Moderado"
-        UvLevel.High -> "Alto"
-        UvLevel.VeryHigh -> "Muito alto"
-        UvLevel.Extreme -> "Extremo"
+        UvLevel.Low -> R.string.uv_name_low
+        UvLevel.Moderate -> R.string.uv_name_moderate
+        UvLevel.High -> R.string.uv_name_high
+        UvLevel.VeryHigh -> R.string.uv_name_very_high
+        UvLevel.Extreme -> R.string.uv_name_extreme
     }
 
 internal val UvLevel.color: Color

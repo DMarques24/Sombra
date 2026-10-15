@@ -28,8 +28,6 @@ import kotlinx.coroutines.flow.stateIn
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -119,17 +117,15 @@ class ForecastViewModel @Inject constructor(
         condition = condition,
     )
 
-    // Hoje e amanhã têm nome; os outros dias ficam abreviados: "Sáb", "Dom"
-    private fun LocalDate.label(today: LocalDate): String = when (this) {
-        today -> "Hoje"
-        today.plusDays(1) -> "Amanhã"
-        else -> format(DAY_FORMAT).removeSuffix(".").replaceFirstChar { it.uppercase() }
+    // Hoje e amanhã têm nome; os outros dias são o dia da semana (o texto é escolhido no ecrã)
+    private fun LocalDate.label(today: LocalDate): DayLabel = when (this) {
+        today -> DayLabel.Today
+        today.plusDays(1) -> DayLabel.Tomorrow
+        else -> DayLabel.Weekday(this)
     }
 
     private companion object {
         // O gráfico só mostra as horas com sol (8h às 19h)
         val CHART_HOURS = 8..19
-
-        val DAY_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE", Locale("pt", "PT"))
     }
 }

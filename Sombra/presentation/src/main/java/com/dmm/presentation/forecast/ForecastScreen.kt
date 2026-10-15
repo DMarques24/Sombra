@@ -53,6 +53,8 @@ import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
 import com.dmm.domain.weather.model.HourRange
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import androidx.compose.ui.platform.LocalConfiguration
 import com.dmm.presentation.forecast.component.ForecastSkeleton
 import com.dmm.presentation.forecast.component.ForecastTopBar
 import com.dmm.presentation.forecast.component.HourlyUv
@@ -129,14 +131,14 @@ fun ForecastContent(
         // O menu abre por baixo do botão do dia (fica no canto direito da Box)
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
             ForecastTopBar(
-                selectedDay = uiState.selectedDay.label,
+                selectedDay = uiState.selectedDay.label.text(),
                 onSelectDayClick = { isDayMenuOpen = true },
             )
             Box(Modifier.align(Alignment.BottomEnd)) {
                 DropdownMenu(expanded = isDayMenuOpen, onDismissRequest = { isDayMenuOpen = false }) {
                     uiState.dayOptions.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(option.label) },
+                            text = { Text(option.label.text()) },
                             onClick = {
                                 isDayMenuOpen = false
                                 onSelectDay(option.date)
@@ -181,7 +183,7 @@ fun ForecastContent(
         ) {
             uiState.days.forEachIndexed { index, day ->
                 if (index > 0) HorizontalDivider(color = SombraColors.Line)
-                UvDayCard(day = day.label, uvLevel = day.uvIndex, icon = day.condition.icon)
+                UvDayCard(day = day.label.text(), uvLevel = day.uvIndex, icon = day.condition.icon)
             }
         }
     }
@@ -197,16 +199,27 @@ private fun ForecastContentPreview() {
                     .mapIndexed { i, uv -> HourlyUv(hour = 8 + i, uvIndex = uv) },
                 currentHour = 13,
                 currentUv = 8,
-                selectedDay = ForecastDayOption(LocalDate.of(2026, 7, 20), "Hoje"),
+                selectedDay = ForecastDayOption(LocalDate.of(2026, 7, 20), DayLabel.Today),
                 dayOptions = emptyList(),
                 bestTime = BestTimeUiState(forRunning = true, uvHours = HourRange(10, 17)),
                 days = listOf(
-                    ForecastDayUiState("Amanhã", uvIndex = 8, condition = WeatherCondition.Clear),
-                    ForecastDayUiState("Sáb", uvIndex = 5, condition = WeatherCondition.Cloudy),
-                    ForecastDayUiState("Dom", uvIndex = 7, condition = WeatherCondition.Clear),
+                    ForecastDayUiState(DayLabel.Tomorrow, uvIndex = 8, condition = WeatherCondition.Clear),
+                    ForecastDayUiState(DayLabel.Weekday(LocalDate.of(2026, 7, 25)), uvIndex = 5, condition = WeatherCondition.Cloudy),
+                    ForecastDayUiState(DayLabel.Weekday(LocalDate.of(2026, 7, 26)), uvIndex = 7, condition = WeatherCondition.Clear),
                 ),
             ),
         )
+    }
+}
+
+// "Hoje", "Amanhã" ou o dia da semana abreviado na língua do telemóvel ("Sáb", "Sat")
+@Composable
+private fun DayLabel.text(): String = when (this) {
+    DayLabel.Today -> stringResource(R.string.forecast_today)
+    DayLabel.Tomorrow -> stringResource(R.string.forecast_tomorrow)
+    is DayLabel.Weekday -> {
+        val locale = LocalConfiguration.current.locales[0]
+        date.format(DateTimeFormatter.ofPattern("EEE", locale)).removeSuffix(".").replaceFirstChar { it.titlecase(locale) }
     }
 }
 

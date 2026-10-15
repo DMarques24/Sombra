@@ -65,7 +65,7 @@ import com.dmm.presentation.home.component.OfflineBanner
 import com.dmm.presentation.home.component.TimerCard
 import com.dmm.presentation.home.mapper.color
 import com.dmm.presentation.home.mapper.imageRes
-import com.dmm.presentation.home.mapper.label
+import com.dmm.presentation.home.mapper.labelRes
 import com.dmm.presentation.home.mapper.onColor
 import com.dmm.domain.weather.model.HourRange
 
@@ -144,7 +144,7 @@ fun HomeContent(
             val weather = uiState.weather
             Image(
                 painter = painterResource(weather.imageRes()),
-                contentDescription = weather.condition.label,
+                contentDescription = stringResource(weather.condition.labelRes),
                 modifier = Modifier.size(230.dp),
             )
             Text(
@@ -159,7 +159,7 @@ fun HomeContent(
                 color = SombraColors.OnSky,
             )
             Text(
-                text = "${weather.condition.label} · sensação ${weather.feelsLike}°",
+                text = stringResource(R.string.home_condition_feels_like, stringResource(weather.condition.labelRes), weather.feelsLike),
                 modifier = Modifier.offset(y = (-16).dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
@@ -167,10 +167,10 @@ fun HomeContent(
             )
             Spacer(Modifier.height(4.dp))
             TempDetailsComponent(
-                uvNumber = "UV ${weather.uvIndex}",
+                uvNumber = stringResource(R.string.home_uv_value, weather.uvIndex),
                 description = weather.uvUntilHour
-                    ?.let { stringResource(R.string.home_uv_until, weather.uvLevel.label, it) }
-                    ?: weather.uvLevel.label,
+                    ?.let { stringResource(R.string.home_uv_until, stringResource(weather.uvLevel.labelRes), it) }
+                    ?: stringResource(weather.uvLevel.labelRes),
                 uvColor = weather.uvLevel.color,
                 onUvColor = weather.uvLevel.onColor,
             )
