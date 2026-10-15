@@ -1,5 +1,7 @@
 package com.dmm.data.di
 
+import com.dmm.data.local.KeystoreStringCipher
+import com.dmm.data.local.StringCipher
 import com.dmm.data.reminder.AlarmReminderScheduler
 import com.dmm.data.repository.FusedLocationRepository
 import com.dmm.data.repository.OpenMeteoWeatherRepository
@@ -47,6 +49,9 @@ abstract class DataModule {
 
     @Binds @Singleton
     abstract fun bindAuthRepository(impl: SupabaseAuthRepository): AuthRepository
+
+    @Binds @Singleton
+    abstract fun bindStringCipher(impl: KeystoreStringCipher): StringCipher
 
     @Binds @Singleton
     abstract fun bindReminderScheduler(impl: AlarmReminderScheduler): ReminderScheduler
