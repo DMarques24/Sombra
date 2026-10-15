@@ -1,6 +1,9 @@
 package com.dmm.presentation.home
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -33,9 +36,11 @@ class HomeScreenTest {
     private fun content(
         timerCard: TimerCardUiState = TimerCardUiState.Idle,
         isOffline: Boolean = false,
+        burnMinutes: Int? = 21,
+        uvIndex: Int = 8,
     ) = HomeUiState.Content(
-        weather = HomeWeatherUiState(27, 28, WeatherCondition.Clear, isDay = true, uvIndex = 8, uvLevel = UvLevel.VeryHigh),
-        risk = SunRiskUiState(21, "II", HourRange(12, 16), HourRange(10, 18), recommendedSpf = 50),
+        weather = HomeWeatherUiState(27, 28, WeatherCondition.Clear, isDay = true, uvIndex = uvIndex, uvLevel = UvLevel.from(uvIndex.toDouble())),
+        risk = SunRiskUiState(burnMinutes, "II", HourRange(12, 16), HourRange(10, 18), recommendedSpf = 50),
         timerCard = timerCard,
         updatedAt = "13:20",
         locationName = "Coimbra",
@@ -50,6 +55,17 @@ class HomeScreenTest {
         composeRule.onNodeWithText("Coimbra").assertIsDisplayed()
         composeRule.onNodeWithText("27°").assertIsDisplayed()
         composeRule.onNodeWithText(context.getString(R.string.home_risk_burn_title, 21)).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun `120 minutos ou mais mostra 120+ e UV abaixo de 1 mostra sem risco`() {
+        var state by mutableStateOf(content(burnMinutes = 167, uvIndex = 2))
+        composeRule.setContent { SombraTheme { HomeContent(state, onTimerAction = {}, onRefresh = {}, onOpenTimer = {}) } }
+
+        composeRule.onNodeWithText(context.getString(R.string.home_risk_burn_title_cap, 120)).performScrollTo().assertIsDisplayed()
+
+        state = content(burnMinutes = null, uvIndex = 0)
+        composeRule.onNodeWithText(context.getString(R.string.home_risk_low_title)).performScrollTo().assertIsDisplayed()
     }
 
     @Test

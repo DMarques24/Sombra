@@ -41,7 +41,14 @@ data class SunRiskUiState(
     val recommendedSpf: Int,
 ) {
     // Menos de 2 horas para queimar já merece o cartão vermelho
-    val isHigh: Boolean get() = burnMinutes != null && burnMinutes < 120
+    val isHigh: Boolean get() = burnMinutes != null && burnMinutes < BURN_MINUTES_CAP
+
+    // A partir de 2 horas o número exato já não interessa: o ecrã mostra "120+"
+    val isBeyondCap: Boolean get() = burnMinutes != null && burnMinutes >= BURN_MINUTES_CAP
+
+    companion object {
+        const val BURN_MINUTES_CAP = 120
+    }
 }
 
 sealed interface TimerCardUiState {

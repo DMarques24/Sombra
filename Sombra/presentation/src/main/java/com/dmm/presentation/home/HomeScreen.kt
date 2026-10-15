@@ -200,10 +200,11 @@ fun HomeContent(
 // "Queimas em ~21 min sem protetor · Pele tipo II. Procura sombra entre as 12h e as 16h."
 @Composable
 private fun SunRiskCard(risk: SunRiskUiState) {
-    val title = risk.burnMinutes
-        ?.takeIf { risk.isHigh }
-        ?.let { stringResource(R.string.home_risk_burn_title, it) }
-        ?: stringResource(R.string.home_risk_low_title)
+    val title = when {
+        risk.burnMinutes == null -> stringResource(R.string.home_risk_low_title)        // UV < 1: sem risco
+        risk.isBeyondCap -> stringResource(R.string.home_risk_burn_title_cap, SunRiskUiState.BURN_MINUTES_CAP)
+        else -> stringResource(R.string.home_risk_burn_title, risk.burnMinutes)
+    }
     val description = when {
         risk.shadeHours != null -> risk.shadeHours.text(R.string.home_risk_shade, risk.skinType)
         risk.protectHours != null -> risk.protectHours.text(R.string.home_risk_protect, risk.skinType)

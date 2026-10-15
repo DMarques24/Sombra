@@ -30,6 +30,7 @@
     <string name="home_today_at">Hoje, %1$s</string>
     <string name="home_uv_until">%1$s até às %2$dh</string>
     <string name="home_risk_burn_title">Queimas em ~%1$d min sem protetor</string>
+    <string name="home_risk_burn_title_cap">Queimas em %1$d+ min sem protetor</string>
     <string name="home_risk_low_title">Risco baixo de escaldão agora</string>
     <string name="home_risk_shade">Pele tipo %1$s. Procura sombra entre as %2$dh e as %3$dh.</string>
     <string name="home_risk_protect">Pele tipo %1$s. Usa protetor entre as %2$dh e as %3$dh.</string>
