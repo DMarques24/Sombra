@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="reapply_button">Reapliquei</string>
     <string name="home_offline">Sem internet · dados de há %1$dh</string>
     <string name="home_offline_refresh">Atualizar</string>
@@ -22,7 +22,7 @@
     <string name="forecast_today">Hoje</string>
     <string name="forecast_uv_title">Índice UV por hora</string>
     <string name="forecast_uv_now">agora: %1$d</string>
-    <string name="forecast_uv_bar_description">%1$d horas, UV %2$d</string>
+    <string name="forecast_uv_bar_description">Às %1$dh, UV %2$d</string>
     <string name="uv_level_low">Baixo 0–2</string>
     <string name="uv_level_moderate">Moderado 3–5</string>
     <string name="uv_level_high">Alto 6–7</string>
@@ -72,9 +72,11 @@
     <string name="timer_ring_idle">horas até reaplicar</string>
     <string name="timer_ring_running">até reaplicar</string>
     <string name="timer_ring_finished">terminou há %1$d min</string>
-    <string name="timer_uv_now_title">UV %1$d agora</string>
+    <!-- "agora" não é contado pelo número: o PluralsCandidate do lint é um falso positivo -->
+    <string name="timer_uv_now_title" tools:ignore="PluralsCandidate">UV %1$d agora</string>
     <string name="timer_uv_recommendation">Para a tua pele recomendamos SPF %1$s.</string>
-    <string name="timer_uv_unknown_title">Sem dados de UV de momento</string>
+    <!-- "momento" é português correto: o lint compara com o dicionário inglês -->
+    <string name="timer_uv_unknown_title" tools:ignore="Typos">Sem dados de UV de momento</string>
     <string name="timer_uv_still_title">O UV ainda está em %1$d</string>
     <string name="timer_uv_still_description">O protetor já não te está a proteger como antes.</string>
     <string name="timer_spf_label">Fator que vais usar</string>
