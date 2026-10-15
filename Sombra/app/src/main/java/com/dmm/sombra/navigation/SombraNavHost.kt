@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,7 +26,7 @@ import com.dmm.presentation.register.registerScreen
 import com.dmm.presentation.skintype.skinTypeScreen
 
 @Composable
-fun SombraNavHost(modifier: Modifier = Modifier) {
+fun SombraNavHost(startDestination: Any, modifier: Modifier = Modifier) {
     // Controla a navegação: avançar, voltar atrás
     val navController = rememberNavController()
 
@@ -52,7 +51,7 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = LoginRoute,
+            startDestination = startDestination,
             // Só o espaço da barra em baixo: o céu do Início pode ir até ao topo, por trás da status bar
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         ) {
@@ -61,25 +60,44 @@ fun SombraNavHost(modifier: Modifier = Modifier) {
             )
             forecastScreen()
             timerScreen()
-            profileScreen()
+            profileScreen(
+                onSignedOut = { navController.navigateClearingStack(LoginRoute) },
+            )
+            // Entrou no Supabase: se já escolheu o tipo de pele vai para o Início, senão acaba o registo
             loginScreen(
-                onLogin = { navController.navigate(RegisterRoute) },
+                onSignedIn = { onboardingCompleted ->
+                    if (onboardingCompleted) navController.navigateClearingStack(HomeRoute)
+                    else navController.navigate(SkinTypeRoute)
+                },
+                onCreateAccount = { navController.navigate(RegisterRoute) },
             )
             registerScreen(
                 onContinue = { navController.navigate(SkinTypeRoute) },
+                onLogin = {
+                    if (!navController.popBackStack<LoginRoute>(inclusive = false)) navController.navigate(LoginRoute)
+                },
             )
             skinTypeScreen(
-                onNext = { navController.navigate(HomeRoute) }
+                // Registo acabado: o Início fica como único ecrã na pilha (o "voltar" já não regressa ao registo)
+                onNext = { navController.navigateClearingStack(HomeRoute) },
             )
         }
     }
 }
 
+// Abre o ecrã como o único da pilha: o "voltar" já não regressa ao Login/registo (nem ao Perfil depois de sair)
+private fun NavHostController.navigateClearingStack(route: Any) {
+    navigate(route) {
+        popUpTo(graph.id) { inclusive = true }
+    }
+}
+
 // Troca de separador sem empilhar ecrãs: volta ao Início antes de abrir o novo,
 // guarda o estado do separador que sai e repõe o do que entra.
+// É o Início (e não o início do grafo) porque, depois do registo, o Login já não está na pilha.
 private fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
     navigate(destination.route) {
-        popUpTo(graph.findStartDestination().id) { saveState = true }
+        popUpTo<HomeRoute> { saveState = true }
         launchSingleTop = true
         restoreState = true
     }

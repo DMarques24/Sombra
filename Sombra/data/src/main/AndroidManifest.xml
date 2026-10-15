@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Aviso "Hora de reaplicar" (Android 13+ pede autorização à pessoa) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Voltar a agendar o aviso depois de o telemóvel reiniciar -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application>
+        <receiver
+            android:name="com.dmm.data.reminder.ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.dmm.data.reminder.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
 </manifest>

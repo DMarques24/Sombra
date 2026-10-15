@@ -12,6 +12,7 @@ import com.dmm.domain.weather.model.WeatherCondition
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 // Converte a resposta da Open-Meteo (DTO, formato da API) no modelo do domínio.
@@ -23,6 +24,7 @@ fun ForecastResponseDto.toDomain(fetchedAt: Instant): Forecast {
         hourly = hourly,
         daily = daily.toDomain(),
         fetchedAt = fetchedAt,
+        zone = ZoneOffset.ofTotalSeconds(utcOffsetSeconds),
     )
 }
 

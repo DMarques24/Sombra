@@ -27,7 +27,6 @@ android {
 dependencies {
     implementation(project(":domain"))
     api(project(":core"))
-    implementation(libs.androidx.credentials)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)

@@ -1,5 +1,6 @@
 package com.dmm.domain.sunscreen.usecase
 
+import com.dmm.domain.sunscreen.model.SunscreenRules
 import com.dmm.domain.sunscreen.model.TimerStatus
 import com.dmm.domain.sunscreen.repository.SunscreenRepository
 import kotlinx.coroutines.delay
@@ -22,7 +23,7 @@ class ObserveTimerStatusUseCase @Inject constructor(
             val remaining = Duration.between(now, session.endsAt)
             when {
                 !remaining.isNegative -> TimerStatus.Running(session, remaining)
-                remaining.abs() < AUTO_STOP -> TimerStatus.Finished(session, remaining.abs())
+                remaining.abs() < SunscreenRules.AUTO_STOP -> TimerStatus.Finished(session, remaining.abs())
                 else -> TimerStatus.Idle
             }
         }
@@ -31,9 +32,5 @@ class ObserveTimerStatusUseCase @Inject constructor(
         while (true) {
             emit(Unit); delay(1.seconds)
         }
-    }
-
-    private companion object {
-        val AUTO_STOP: Duration = Duration.ofMinutes(30)
     }
 }

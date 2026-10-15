@@ -4,8 +4,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.dmm.core.navigation.LoginRoute
 
-fun NavGraphBuilder.loginScreen(onLogin: () -> Unit) {
+fun NavGraphBuilder.loginScreen(
+    onSignedIn: (onboardingCompleted: Boolean) -> Unit,
+    onCreateAccount: () -> Unit,
+) {
     composable<LoginRoute> {
-        LoginScreen(onLogin = onLogin)
+        LoginScreen(onSignedIn = onSignedIn, onCreateAccount = onCreateAccount)
     }
 }

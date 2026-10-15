@@ -20,4 +20,6 @@ dependencies {
     // api: o Flow faz parte das interfaces públicas (ex.: SunscreenRepository)
     api(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

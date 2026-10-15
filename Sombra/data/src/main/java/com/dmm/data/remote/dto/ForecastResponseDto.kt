@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ForecastResponseDto(
     val timezone: String,
+    // Fuso horário do sítio: as horas da resposta são as de lá, não as do telemóvel
+    @SerialName("utc_offset_seconds") val utcOffsetSeconds: Int = 0,
     val current: CurrentDto,
     val hourly: HourlyDto,
     val daily: DailyDto,

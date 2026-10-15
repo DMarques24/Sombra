@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -34,7 +38,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dmm.core.components.LocationPermissionStatus
 import com.dmm.core.components.SombraDarkButton
+import com.dmm.core.components.hasLocationPermission
+import com.dmm.core.components.rememberLocationPermissionRequest
 import com.dmm.core.components.SombraLinkPrompt
 import com.dmm.core.components.SombraStepProgressBar
 import com.dmm.core.components.SombraTextField
@@ -46,17 +53,26 @@ import com.dmm.presentation.register.component.PasswordStrengthLabel
 @Composable
 fun RegisterScreen(
     onContinue: () -> Unit,
+    onLogin: () -> Unit,
     viewModel: RegisterViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // TODO: ligar Entrar e a localização quando houver lógica
+    val context = LocalContext.current
+    val requestLocation = rememberLocationPermissionRequest { status ->
+        if (status == LocationPermissionStatus.Granted) viewModel.onUseLocation() else viewModel.onLocationDenied()
+    }
     RegisterContent(
         uiState = uiState,
         onNameChange = viewModel::onNameChange,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onCityChange = viewModel::onCityChange,
-        onContinue = onContinue,      // a navegação é decidida no SombraNavHost
+        onUseLocation = {
+            if (context.hasLocationPermission()) viewModel.onUseLocation() else requestLocation()
+        },
+        // a navegação é decidida no SombraNavHost; o ViewModel só avisa quando o perfil está guardado
+        onContinue = { viewModel.onContinue(onDone = onContinue) },
+        onLogin = onLogin,
     )
 }
 
@@ -136,8 +152,16 @@ fun RegisterContent(
                     capitalization = KeyboardCapitalization.Words,
                     imeAction = ImeAction.Done,
                 ),
+                // o ✓ do teclado continua logo (com o teclado aberto, o botão fica tapado)
+                keyboardActions = KeyboardActions(onDone = { onContinue() }),
                 trailing = {
-                    IconButton(onClick = onUseLocation) {
+                    if (uiState.isLocating) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(12.dp).size(24.dp),
+                            color = SombraColors.TextMuted,
+                            strokeWidth = 2.dp,
+                        )
+                    } else IconButton(onClick = onUseLocation) {
                         Icon(
                             imageVector = Icons.Outlined.LocationOn,
                             contentDescription = stringResource(R.string.register_use_location),
@@ -145,6 +169,14 @@ fun RegisterContent(
                         )
                     }
                 },
+            )
+        }
+        uiState.message?.let { message ->
+            Text(
+                text = stringResource(message),
+                modifier = Modifier.padding(top = 12.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (uiState.messageIsError) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
             )
         }
         Row(
@@ -161,7 +193,7 @@ fun RegisterContent(
             )
             // O SombraDarkButton ocupa a largura toda por defeito; aqui só deve ter a largura do texto
             SombraDarkButton(
-                text = stringResource(R.string.register_continue),
+                text = stringResource(if (uiState.isLoading) R.string.register_loading else R.string.register_continue),
                 onClick = onContinue,
                 modifier = Modifier.width(IntrinsicSize.Max),
             )

@@ -31,6 +31,7 @@ import com.dmm.presentation.R
 // Aparece quando a pessoa recusou a localização: explica porquê e deixa ativar
 @Composable
 fun LocationPromptCard(
+    cityName: String,
     buttonText: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,7 +61,7 @@ fun LocationPromptCard(
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = stringResource(R.string.home_location_title),
+                    text = stringResource(R.string.home_location_title, cityName),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = SombraColors.SkyBlueDeep,
@@ -81,6 +82,7 @@ fun LocationPromptCard(
 private fun LocationPromptCardPreview() {
     SombraTheme {
         LocationPromptCard(
+            cityName = "Coimbra",
             buttonText = "Permitir localização",
             onClick = {},
             modifier = Modifier.padding(16.dp),

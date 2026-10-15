@@ -1,6 +1,7 @@
 package com.dmm.presentation.home
 
 import com.dmm.domain.common.DataError
+import com.dmm.domain.weather.model.HourRange
 import com.dmm.domain.weather.model.UvLevel
 import com.dmm.domain.weather.model.WeatherCondition
 
@@ -9,12 +10,13 @@ sealed interface HomeUiState {
     data class Error(val error: DataError) : HomeUiState
     data class Content(
         val weather: HomeWeatherUiState,
+        val risk: SunRiskUiState,
         val timerCard: TimerCardUiState,
+        val updatedAt: String,
+        val locationName: String?,                  // null: GPS sem nome de cidade ("A tua localização")
         val isOffline: Boolean = false,
         val hoursSinceUpdate: Int = 0,
-        val updatedAt: String = "13:20",
         val isRefreshing: Boolean = false,
-        val isDefaultLocation: Boolean = false,
         val locationPrompt: LocationPrompt = LocationPrompt.None,
     ) : HomeUiState
 }
@@ -27,7 +29,20 @@ data class HomeWeatherUiState(
     val isDay: Boolean,
     val uvIndex: Int,
     val uvLevel: UvLevel,
+    val uvUntilHour: Int? = null,                   // "Muito alto até às 16h"; null se já passou
 )
+
+// O aviso do cartão: em quanto tempo queima e quando procurar sombra
+data class SunRiskUiState(
+    val burnMinutes: Int?,                          // null: UV baixo, não há risco agora
+    val skinType: String,
+    val shadeHours: HourRange?,
+    val protectHours: HourRange?,
+    val recommendedSpf: Int,
+) {
+    // Menos de 2 horas para queimar já merece o cartão vermelho
+    val isHigh: Boolean get() = burnMinutes != null && burnMinutes < 120
+}
 
 sealed interface TimerCardUiState {
     data object Idle : TimerCardUiState

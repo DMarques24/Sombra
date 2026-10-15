@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
+import com.dmm.presentation.common.spfLabel
 import com.dmm.presentation.home.TimerCardUiState
 
 @Composable
@@ -53,7 +54,7 @@ fun TimerCard(
             progress = state.progress,
             ringColor = SombraColors.SunDeep,
             title = stringResource(R.string.timer_card_running_title, state.remainingText()),
-            subtitle = stringResource(R.string.timer_card_running_subtitle, state.spf, state.appliedAt),
+            subtitle = stringResource(R.string.timer_card_running_subtitle, spfLabel(state.spf), state.appliedAt),
             actionText = stringResource(R.string.reapply_button),
             actionStyle = TimerActionStyle.Outlined,
             onAction = onAction,

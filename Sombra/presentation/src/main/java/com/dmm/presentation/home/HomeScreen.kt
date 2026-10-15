@@ -67,6 +67,7 @@ import com.dmm.presentation.home.mapper.color
 import com.dmm.presentation.home.mapper.imageRes
 import com.dmm.presentation.home.mapper.label
 import com.dmm.presentation.home.mapper.onColor
+import com.dmm.domain.weather.model.HourRange
 
 @Composable
 fun HomeScreen(
@@ -79,12 +80,11 @@ fun HomeScreen(
     val requestPermission = rememberLocationPermissionRequest { status ->
         viewModel.onLocationPermissionResult(status)
     }
-    // Corre ao abrir o ecrã e sempre que a app volta ao primeiro plano:
-    // assim, se a pessoa ativou a localização nas definições, o tempo atualiza sozinho
     LifecycleResumeEffect(Unit) {
         when {
             context.hasLocationPermission() ->
                 viewModel.onLocationPermissionResult(LocationPermissionStatus.Granted)
+
             viewModel.shouldAskForLocation() -> requestPermission()
         }
         onPauseOrDispose { }
@@ -130,9 +130,8 @@ fun HomeContent(
         modifier = modifier,
         sky = {
             SombraTopBar(
-                title = if (uiState.isDefaultLocation) "Coimbra" else stringResource(R.string.home_location_current),
-                subtitle = "Hoje, 13:20",
-                onNotificationsClick = { /* TODO: abrir notificações */ },
+                title = uiState.locationName ?: stringResource(R.string.home_location_current),
+                subtitle = stringResource(R.string.home_today_at, uiState.updatedAt),
             )
             AnimatedVisibility(visible = uiState.isOffline) {      // aparece e desaparece suavemente
                 OfflineBanner(
@@ -169,7 +168,9 @@ fun HomeContent(
             Spacer(Modifier.height(4.dp))
             TempDetailsComponent(
                 uvNumber = "UV ${weather.uvIndex}",
-                description = weather.uvLevel.label,
+                description = weather.uvUntilHour
+                    ?.let { stringResource(R.string.home_uv_until, weather.uvLevel.label, it) }
+                    ?: weather.uvLevel.label,
                 uvColor = weather.uvLevel.color,
                 onUvColor = weather.uvLevel.onColor,
             )
@@ -177,6 +178,7 @@ fun HomeContent(
         card = {
             if (uiState.locationPrompt != LocationPrompt.None) {
                 LocationPromptCard(
+                    cityName = uiState.locationName ?: stringResource(R.string.home_location_current),
                     buttonText = stringResource(
                         if (uiState.locationPrompt == LocationPrompt.OpenSettings) R.string.home_location_open_settings
                         else R.string.home_location_allow
@@ -184,13 +186,7 @@ fun HomeContent(
                     onClick = onLocationPromptClick,
                 )
             }
-            InfoComponent(
-                title = "Queimas em ~15 min sem protetor",
-                description = "Pele tipo II. Procura sombra entre as 12h e as 16h.",
-                backgroundColor = SombraColors.RiskHighContainer,
-                titleColor = SombraColors.OnRiskHighContainer,
-                descriptionColor = SombraColors.OnRiskHighContainer,
-            )
+            SunRiskCard(risk = uiState.risk)
             TimerCard(
                 state = uiState.timerCard,
                 onAction = onTimerAction,
@@ -200,6 +196,32 @@ fun HomeContent(
         },
     )
 }
+
+// "Queimas em ~21 min sem protetor · Pele tipo II. Procura sombra entre as 12h e as 16h."
+@Composable
+private fun SunRiskCard(risk: SunRiskUiState) {
+    val title = risk.burnMinutes
+        ?.takeIf { risk.isHigh }
+        ?.let { stringResource(R.string.home_risk_burn_title, it) }
+        ?: stringResource(R.string.home_risk_low_title)
+    val description = when {
+        risk.shadeHours != null -> risk.shadeHours.text(R.string.home_risk_shade, risk.skinType)
+        risk.protectHours != null -> risk.protectHours.text(R.string.home_risk_protect, risk.skinType)
+        else -> stringResource(R.string.home_risk_none, risk.skinType)
+    }
+    InfoComponent(
+        title = title,
+        description = description,
+        backgroundColor = if (risk.isHigh) SombraColors.RiskHighContainer else SombraColors.SkyBluePale,
+        titleColor = if (risk.isHigh) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
+        descriptionColor = if (risk.isHigh) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
+        iconColor = if (risk.isHigh) SombraColors.UvVeryHigh else SombraColors.SkyBlue,
+    )
+}
+
+@Composable
+private fun HourRange.text(resId: Int, skinType: String): String =
+    stringResource(resId, skinType, startHour, endHour)
 
 @Composable
 fun HomeLoading(modifier: Modifier = Modifier) {
@@ -299,7 +321,12 @@ private fun HomeContentPreview() {
                 weather = HomeWeatherUiState(
                     temperature = 27, feelsLike = 28,
                     condition = WeatherCondition.Clear, isDay = true,
-                    uvIndex = 8, uvLevel = UvLevel.VeryHigh,
+                    uvIndex = 8, uvLevel = UvLevel.VeryHigh, uvUntilHour = 16,
+                ),
+                risk = SunRiskUiState(
+                    burnMinutes = 21, skinType = "II",
+                    shadeHours = HourRange(12, 16), protectHours = HourRange(10, 18),
+                    recommendedSpf = 50,
                 ),
                 timerCard = TimerCardUiState.Running(
                     remainingHours = 1, remainingMinutes = 12,
@@ -307,6 +334,8 @@ private fun HomeContentPreview() {
                 ),
                 isOffline = true,
                 hoursSinceUpdate = 2,
+                updatedAt = "13:20",
+                locationName = "Coimbra",
             ),
             onTimerAction = {},
             onRefresh = {},

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
@@ -13,6 +15,18 @@ android {
 
     defaultConfig {
         minSdk = 26
+
+        // O URL e a chave pública (anon) do Supabase vêm do local.properties, que não vai para o git:
+        //   supabase.url=https://xxxx.supabase.co
+        //   supabase.anonKey=sb_publishable_...   (a chave publishable, nunca a secret/service_role)
+        val localProperties = Properties().apply {
+            rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+        }
+        buildConfigField("String", "SUPABASE_URL", "\"${localProperties.getProperty("supabase.url", "")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties.getProperty("supabase.anonKey", "")}\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

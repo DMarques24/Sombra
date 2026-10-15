@@ -1,19 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cópias de segurança e passagem para um telemóvel novo (Android 12+):
+     tudo menos a sessão do Supabase. No telemóvel novo a pessoa entra outra vez e os dados voltam da conta. -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude domain="sharedpref" path="sombra_auth.xml" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="sharedpref" path="sombra_auth.xml" />
     </device-transfer>
-    -->
 </data-extraction-rules>

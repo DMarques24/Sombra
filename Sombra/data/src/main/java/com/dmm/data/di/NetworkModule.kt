@@ -1,5 +1,7 @@
 package com.dmm.data.di
 
+import com.dmm.data.BuildConfig
+import com.dmm.data.remote.supabase.SupabaseConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,8 +31,11 @@ object NetworkModule {
         install(HttpTimeout) {
             requestTimeoutMillis = 15_000
         }
-        install(Logging) {
+        // Só nas versões de desenvolvimento: a versão da Play Store não escreve pedidos no Logcat
+        if (BuildConfig.DEBUG) install(Logging) {
             level = LogLevel.BODY
+            // Os pedidos ao Supabase levam palavras-passe e tokens: nunca vão para o Logcat
+            filter { request -> SupabaseConfig.url.isBlank() || !request.url.toString().startsWith(SupabaseConfig.url) }
         }
         expectSuccess = true
     }

@@ -3,7 +3,6 @@ package com.dmm.presentation.login
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -31,26 +30,26 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraDarkButton
 import com.dmm.core.components.SombraLinkPrompt
-import com.dmm.core.components.SombraSecondaryButton
 import com.dmm.core.components.SombraTextField
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
 import com.dmm.presentation.login.component.LoginSkyHeader
-import com.dmm.presentation.login.component.OrDivider
 
 @Composable
 fun LoginScreen(
-    onLogin: () -> Unit,
+    onSignedIn: (onboardingCompleted: Boolean) -> Unit,
+    onCreateAccount: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // TODO: ligar Apple, Google, Esqueci-me e Criar conta quando houver lógica
     LoginContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
-        onLogin = onLogin,      // a navegação é decidida no SombraNavHost
+        onForgotPassword = viewModel::onForgotPassword,
+        onLogin = { viewModel.onLogin(onDone = onSignedIn) },     // a navegação é decidida no SombraNavHost
+        onCreateAccount = onCreateAccount,
     )
 }
 
@@ -62,8 +61,6 @@ fun LoginContent(
     modifier: Modifier = Modifier,
     onForgotPassword: () -> Unit = {},
     onLogin: () -> Unit = {},
-    onAppleLogin: () -> Unit = {},
-    onGoogleLogin: () -> Unit = {},
     onCreateAccount: () -> Unit = {},
 ) {
     Column(
@@ -108,6 +105,8 @@ fun LoginContent(
                     label = stringResource(R.string.login_password),
                     isPassword = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    // o ✓ do teclado entra logo: com o teclado aberto, o botão Entrar fica tapado
+                    keyboardActions = KeyboardActions(onDone = { onLogin() }),
                     trailing = {
                         TextButton(onClick = onForgotPassword) {
                             Text(
@@ -118,22 +117,19 @@ fun LoginContent(
                         }
                     },
                 )
-                SombraDarkButton(text = stringResource(R.string.login_submit), onClick = onLogin)
-                OrDivider(text = stringResource(R.string.login_or))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SombraSecondaryButton(
-                        text = stringResource(R.string.login_apple),
-                        onClick = onAppleLogin,
-                        icon = painterResource(R.drawable.ic_apple),
-                        modifier = Modifier.weight(1f),
-                    )
-                    SombraSecondaryButton(
-                        text = stringResource(R.string.login_google),
-                        onClick = onGoogleLogin,
-                        icon = painterResource(R.drawable.ic_google),
-                        modifier = Modifier.weight(1f),
+                uiState.message?.let { message ->
+                    Text(
+                        text = stringResource(message),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (uiState.messageIsError) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
                     )
                 }
+                SombraDarkButton(
+                    text = stringResource(if (uiState.isLoading) R.string.login_loading else R.string.login_submit),
+                    onClick = onLogin,
+                )
+                // Apple e Google voltam quando estiverem configurados no Supabase (OAuth):
+                // botões que não fazem nada são motivo de recusa na revisão da Play Store
             }
         }
         SombraLinkPrompt(

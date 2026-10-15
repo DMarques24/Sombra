@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_today">Hoje</string>
-    <string name="nav_forecast">Previsao</string>
+    <string name="nav_forecast">Previsão</string>
     <string name="nav_timer">Protetor</string>
-    <string name="nav_profile">Prefil</string>
+    <string name="nav_profile">Perfil</string>
 </resources>

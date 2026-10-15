@@ -1,16 +1,9 @@
 package com.dmm.core.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +19,6 @@ import com.dmm.core.designsystem.SombraTheme
 fun SombraTopBar(
     title: String,
     subtitle: String,
-    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentColor: Color = Color.White,
 ) {
@@ -47,18 +39,6 @@ fun SombraTopBar(
                 color = contentColor,
             )
         }
-        IconButton(
-            onClick = onNotificationsClick,
-            modifier = Modifier
-                .size(48.dp)
-                .background(contentColor.copy(alpha = 0.25f), CircleShape),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = "Notificações",
-                tint = contentColor,
-            )
-        }
     }
 }
 
@@ -69,7 +49,6 @@ private fun SombraTopBarPreview() {
         SombraTopBar(
             title = "Coimbra",
             subtitle = "Hoje, 13:20",
-            onNotificationsClick = {},
             modifier = Modifier.padding(20.dp),
         )
     }

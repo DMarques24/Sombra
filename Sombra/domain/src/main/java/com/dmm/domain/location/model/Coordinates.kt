@@ -5,8 +5,8 @@ data class Coordinates(
     val longitude: Double,
 ) {
     companion object {
-        // Usada quando não há permissão ou o GPS não responde
-        // TODO: trocar pela cidade que a pessoa escolheu no registo
-        val Default = Coordinates(latitude = 40.2033, longitude = -8.4103)   // Coimbra
+        // Usada quando não há permissão, o GPS não responde e a cidade do registo não foi encontrada
+        val Default = Coordinates(latitude = 40.2033, longitude = -8.4103)
+        const val DEFAULT_CITY = "Coimbra"
     }
 }
