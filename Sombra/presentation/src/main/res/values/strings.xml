@@ -1,32 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="reapply_button">Reapliquei</string>
-    <string name="home_error">Não conseguimos carregar o tempo</string>
     <string name="home_offline">Sem internet · dados de há %1$dh</string>
     <string name="home_offline_refresh">Atualizar</string>
-    <string name="home_error_description">Verifica a ligação à internet e tenta outra vez. O temporizador do protetor continua a funcionar.</string>
     <string name="action_retry">Tenta outra vez</string>
+
+    <!-- Erros -->
+    <string name="error_no_connection_title">Sem ligação à internet</string>
+    <string name="error_no_connection_description">Verifica o Wi-Fi ou os dados móveis e tenta outra vez.</string>
+    <string name="error_server_title">O serviço do tempo está em baixo</string>
+    <string name="error_server_description">O problema não é teu. Tenta outra vez daqui a uns minutos.</string>
+    <string name="error_unknown_title">Algo correu mal</string>
+    <string name="error_unknown_description">Não conseguimos carregar o tempo. Tenta outra vez.</string>
+    <string name="home_location_current">A tua localização</string>
+    <string name="home_location_title">Estás a ver o tempo de %1$s</string>
+    <string name="home_location_description">Ativa a localização para veres o UV onde estás.</string>
+    <string name="home_location_allow">Permitir localização</string>
+    <string name="home_location_open_settings">Abrir definições</string>
+    <string name="home_error_timer_hint">O temporizador do protetor continua a funcionar.</string>
     <string name="forecast_title">Planear o dia</string>
     <string name="forecast_today">Hoje</string>
     <string name="forecast_uv_title">Índice UV por hora</string>
     <string name="forecast_uv_now">agora: %1$d</string>
-    <string name="forecast_uv_bar_description">%1$d horas, UV %2$d</string>
+    <string name="forecast_uv_bar_description">Às %1$dh, UV %2$d</string>
     <string name="uv_level_low">Baixo 0–2</string>
     <string name="uv_level_moderate">Moderado 3–5</string>
     <string name="uv_level_high">Alto 6–7</string>
     <string name="uv_level_very_high">Muito alto 8–10</string>
+    <string name="home_today_at">Hoje, %1$s</string>
+    <string name="home_condition_feels_like">%1$s · sensação %2$d°</string>
+    <string name="home_uv_value">UV %1$d</string>
+    <string name="weather_clear">Céu limpo</string>
+    <string name="weather_partly_cloudy">Pouco nublado</string>
+    <string name="weather_cloudy">Nublado</string>
+    <string name="weather_fog">Nevoeiro</string>
+    <string name="weather_rain">Chuva</string>
+    <string name="weather_snow">Neve</string>
+    <string name="weather_storm">Trovoada</string>
+    <string name="uv_name_low">Baixo</string>
+    <string name="uv_name_moderate">Moderado</string>
+    <string name="uv_name_high">Alto</string>
+    <string name="uv_name_very_high">Muito alto</string>
+    <string name="uv_name_extreme">Extremo</string>
+    <string name="forecast_tomorrow">Amanhã</string>
+    <string name="forecast_day_description">%1$s, UV máximo %2$d</string>
+    <string name="home_uv_until">%1$s até às %2$dh</string>
+    <string name="home_risk_burn_title">Queimas em ~%1$d min sem protetor</string>
+    <string name="home_risk_burn_title_cap">Queimas em %1$d+ min sem protetor</string>
+    <string name="home_risk_low_title">Risco baixo de escaldão agora</string>
+    <string name="home_risk_shade">Pele tipo %1$s. Procura sombra entre as %2$dh e as %3$dh.</string>
+    <string name="home_risk_protect">Pele tipo %1$s. Usa protetor entre as %2$dh e as %3$dh.</string>
+    <string name="home_risk_none">Pele tipo %1$s. O UV fica baixo o resto do dia.</string>
+    <string name="forecast_uv_max">máx: %1$d</string>
+    <string name="forecast_best_time_run">Melhor hora para correr</string>
+    <string name="forecast_best_time_out">Melhor hora para estar ao sol</string>
+    <string name="forecast_best_time_range">até às %1$d:00 · depois das %2$d:00</string>
+    <string name="forecast_best_time_all_day">O UV fica baixo o dia todo</string>
+    <string name="forecast_offline">Sem internet · a mostrar os últimos dados guardados</string>
 
     <!-- Protetor (temporizador) -->
     <string name="timer_title">Protetor</string>
     <string name="timer_title_finished">Hora de reaplicar</string>
     <string name="timer_subtitle_idle">Nenhum temporizador a decorrer.</string>
-    <string name="timer_subtitle_running">SPF %1$d aplicado às %2$s.</string>
-    <string name="timer_subtitle_finished">Passaram %1$d horas desde as %2$s.</string>
+    <string name="timer_subtitle_running">SPF %1$s aplicado às %2$s.</string>
+    <string name="timer_subtitle_finished">Passaram %1$s desde as %2$s.</string>
+    <plurals name="timer_elapsed_hours">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
+    <string name="timer_elapsed_minutes">%1$d min</string>
     <string name="timer_ring_idle">horas até reaplicar</string>
     <string name="timer_ring_running">até reaplicar</string>
     <string name="timer_ring_finished">terminou há %1$d min</string>
-    <string name="timer_uv_now_title">UV %1$d agora</string>
-    <string name="timer_uv_recommendation">Para a tua pele recomendamos SPF %1$d.</string>
+    <!-- "agora" não é contado pelo número: o PluralsCandidate do lint é um falso positivo -->
+    <string name="timer_uv_now_title" tools:ignore="PluralsCandidate">UV %1$d agora</string>
+    <string name="timer_uv_recommendation">Para a tua pele recomendamos SPF %1$s.</string>
+    <!-- "momento" é português correto: o lint compara com o dicionário inglês -->
+    <string name="timer_uv_unknown_title" tools:ignore="Typos">Sem dados de UV de momento</string>
     <string name="timer_uv_still_title">O UV ainda está em %1$d</string>
     <string name="timer_uv_still_description">O protetor já não te está a proteger como antes.</string>
     <string name="timer_spf_label">Fator que vais usar</string>
@@ -49,14 +99,29 @@
     <string name="timer_card_idle_subtitle">Regista e avisamos-te para reaplicar.</string>
     <string name="timer_card_apply_button">Apliquei</string>
     <string name="timer_card_running_title">Reaplicar em %1$s</string>
-    <string name="timer_card_running_subtitle">SPF %1$d aplicado às %2$s</string>
+    <string name="timer_card_running_subtitle">SPF %1$s aplicado às %2$s</string>
     <string name="timer_card_remaining_hours">%1$dh %2$dm</string>
     <string name="timer_card_remaining_minutes">%1$d min</string>
     <string name="timer_card_finished_subtitle">Há %1$d min · UV ainda em %2$d</string>
 
     <!-- Perfil -->
     <string name="profile_settings">Definições</string>
-    <string name="profile_subtitle">Pele tipo %1$s · %2$s</string>
+    <string name="profile_skin_type">Pele tipo %1$s</string>
+    <string name="profile_skin_type_unknown">Tipo de pele por escolher</string>
+    <string name="profile_no_name">Olá!</string>
+    <string name="profile_max_level">Chegaste ao nível máximo</string>
+    <string name="profile_edit_title">Editar perfil</string>
+    <string name="profile_edit_skin_type">Tipo de pele</string>
+    <string name="profile_edit_save">Guardar</string>
+    <string name="profile_sign_out">Terminar sessão</string>
+    <string name="profile_privacy_policy">Privacidade</string>
+    <string name="profile_delete_account">Apagar conta</string>
+    <string name="profile_deleting">A apagar…</string>
+    <string name="profile_delete_title">Apagar a tua conta?</string>
+    <string name="profile_delete_text">A conta, o perfil e todo o histórico do protetor (XP, níveis e patches) são apagados para sempre. Não dá para desfazer.</string>
+    <string name="profile_delete_confirm">Apagar</string>
+    <string name="profile_delete_cancel">Cancelar</string>
+    <string name="privacy_policy_url" translatable="false">https://dmarques24.github.io/Sombra/privacidade.html</string>
     <string name="profile_level">Nível %1$d · %2$s</string>
     <string name="profile_xp">%1$d / %2$d XP</string>
     <string name="profile_next_level">Próximo: %1$s · %2$s</string>
@@ -68,9 +133,16 @@
     <string name="profile_patch_locked">%1$s, bloqueado</string>
 
     <!-- Níveis -->
+    <string name="level_sunglasses">Óculos de sol</string>
+    <string name="level_cap">Boné</string>
     <string name="level_hat">Chapéu</string>
     <string name="level_parasol">Guarda-sol</string>
-    <string name="level_parasol_unlock">desbloqueia modo família</string>
+    <string name="level_shade">Sombra</string>
+    <string name="level_sunglasses_unlock">o começo de tudo</string>
+    <string name="level_cap_unlock">já és do clube do protetor</string>
+    <string name="level_hat_unlock">desbloqueia o patch Chapéu no topo</string>
+    <string name="level_parasol_unlock">desbloqueia o patch Família</string>
+    <string name="level_shade_unlock">o nível máximo</string>
 
     <!-- Patches -->
     <string name="patch_first_sunscreen">Primeiro protetor</string>
@@ -89,11 +161,22 @@
     <string name="login_password">Palavra-passe</string>
     <string name="login_forgot_password">Esqueci-me</string>
     <string name="login_submit">Entrar</string>
-    <string name="login_or">ou</string>
-    <string name="login_apple">Apple</string>
-    <string name="login_google">Google</string>
     <string name="login_no_account">Ainda não tens conta?</string>
     <string name="login_create_account">Criar conta</string>
+    <string name="login_loading">A entrar…</string>
+    <string name="login_missing_fields">Escreve o teu email e a palavra-passe.</string>
+    <string name="login_forgot_needs_email">Escreve o teu email primeiro e carrega outra vez em \"Esqueci-me\".</string>
+    <string name="login_forgot_sent">Enviámos-te um email com um link para mudares a palavra-passe.</string>
+
+    <!-- Erros de autenticação (Supabase) -->
+    <string name="auth_error_invalid_credentials">Email ou palavra-passe errados.</string>
+    <string name="auth_error_email_used">Já existe uma conta com este email. Entra com ela.</string>
+    <string name="auth_error_weak_password">Essa palavra-passe é fraca demais. Tenta uma mais comprida.</string>
+    <string name="auth_error_invalid_email">Esse email não parece válido.</string>
+    <string name="auth_error_email_not_confirmed">Ainda falta confirmares o teu email. Vê a tua caixa de entrada.</string>
+    <string name="auth_error_too_many_requests">Demasiadas tentativas. Espera um pouco e tenta outra vez.</string>
+    <string name="auth_error_not_configured">A ligação ao Supabase ainda não está configurada.</string>
+    <string name="auth_error_unknown">Algo correu mal. Tenta outra vez.</string>
 
     <!-- Criar conta -->
     <string name="register_title">Cria a tua conta</string>
@@ -107,6 +190,12 @@
     <string name="register_have_account">Já tens conta?</string>
     <string name="register_login">Entrar</string>
     <string name="register_step">Passo %1$d de %2$d</string>
+    <string name="register_name_required">Escreve o teu nome para continuar.</string>
+    <string name="register_password_short">A palavra-passe tem de ter pelo menos 6 caracteres.</string>
+    <string name="register_confirm_email">Conta criada! Enviámos-te um email: confirma-o e depois entra.</string>
+    <string name="register_loading">A criar…</string>
+    <string name="register_location_not_found">Não conseguimos descobrir a tua cidade. Escreve-a à mão.</string>
+    <string name="register_location_denied">Sem acesso à localização. Escreve a tua cidade à mão.</string>
     <string name="password_weak">Fraca</string>
     <string name="password_medium">Média</string>
     <string name="password_strong">Forte</string>

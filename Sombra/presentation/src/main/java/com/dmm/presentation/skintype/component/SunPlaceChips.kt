@@ -22,7 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
-import com.dmm.presentation.skintype.SunPlace
+import com.dmm.domain.profile.model.SunPlace
+import com.dmm.presentation.common.label
 
 // "ONDE PASSAS MAIS TEMPO AO SOL?" e as pílulas; podem escolher-se várias.
 // FlowRow passa para a linha seguinte quando não cabe.
@@ -76,7 +77,7 @@ private fun SunPlaceChipsPreview() {
     SombraTheme {
         SunPlaceChips(
             title = "ONDE PASSAS MAIS TEMPO AO SOL?",
-            selected = setOf(SunPlace.BEACH, SunPlace.RUNNING),
+            selected = setOf(SunPlace.Beach, SunPlace.Running),
             onToggle = {},
             modifier = Modifier.padding(20.dp),
         )

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reminder_channel">Sunscreen reminders</string>
+    <string name="reminder_title">Time to reapply ☀️</string>
+    <string name="reminder_text">Your sunscreen isn\'t protecting you like before. Reapply and log it in Sombra.</string>
+</resources>

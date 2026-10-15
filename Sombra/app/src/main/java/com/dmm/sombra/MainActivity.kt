@@ -14,6 +14,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Fica à espera de verificar se tem login feito ou não
+        // Fica à espera de saber se o registo já foi feito ou não
         splash.setKeepOnScreenCondition { viewModel.isLoading.value }
         splash.setOnExitAnimationListener { splashView -> playSplashExitAnimation(splashView) }
         // Barras do sistema transparentes: a nossa barra de navegação pinta também por trás dos botões do Android
@@ -41,7 +43,15 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
-        setContent { SombraTheme { Surface { SombraNavHost() } } }
+        setContent {
+            val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
+            SombraTheme {
+                Surface {
+                    // Enquanto é null o splash ainda está por cima, por isso não se desenha nada
+                    startDestination?.let { SombraNavHost(startDestination = it) }
+                }
+            }
+        }
     }
 
     private fun playSplashExitAnimation(splashView: SplashScreenViewProvider) {

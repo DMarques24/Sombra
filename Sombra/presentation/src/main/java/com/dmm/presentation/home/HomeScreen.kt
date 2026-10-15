@@ -1,7 +1,5 @@
 package com.dmm.presentation.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -34,11 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraTopBar
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.domain.common.DataError
+import com.dmm.presentation.common.descriptionRes
+import com.dmm.presentation.common.titleRes
+import com.dmm.domain.weather.model.UvLevel
+import com.dmm.domain.weather.model.WeatherCondition
 import com.dmm.presentation.R
 import com.dmm.presentation.home.component.TempDetailsComponent
 import androidx.compose.foundation.layout.Arrangement
@@ -46,21 +49,46 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import com.dmm.core.components.LocationPermissionStatus
 import com.dmm.core.components.SombraDarkButton
+import com.dmm.core.components.hasLocationPermission
+import com.dmm.core.components.openAppSettings
+import com.dmm.core.components.rememberLocationPermissionRequest
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.dmm.presentation.home.component.LocationPromptCard
 import com.dmm.presentation.home.component.HomeCardSkeleton
 import com.dmm.presentation.home.component.HomeSkySkeleton
 import com.dmm.presentation.home.component.InfoComponent
 import com.dmm.presentation.home.component.OfflineBanner
 import com.dmm.presentation.home.component.TimerCard
+import com.dmm.presentation.home.mapper.color
+import com.dmm.presentation.home.mapper.imageRes
+import com.dmm.presentation.home.mapper.labelRes
+import com.dmm.presentation.home.mapper.onColor
+import com.dmm.domain.weather.model.HourRange
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     onOpenTimer: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val requestPermission = rememberLocationPermissionRequest { status ->
+        viewModel.onLocationPermissionResult(status)
+    }
+    LifecycleResumeEffect(Unit) {
+        when {
+            context.hasLocationPermission() ->
+                viewModel.onLocationPermissionResult(LocationPermissionStatus.Granted)
+
+            viewModel.shouldAskForLocation() -> requestPermission()
+        }
+        onPauseOrDispose { }
+    }
 
     AnimatedContent(
         targetState = uiState,
@@ -75,8 +103,16 @@ fun HomeScreen(
                 onTimerAction = viewModel::onTimerAction,
                 onRefresh = viewModel::onRefresh,
                 onOpenTimer = onOpenTimer,
+                onLocationPromptClick = {
+                    when (state.locationPrompt) {
+                        LocationPrompt.AskAgain -> requestPermission()
+                        LocationPrompt.OpenSettings -> context.openAppSettings()
+                        LocationPrompt.None -> Unit
+                    }
+                },
             )
-            HomeUiState.Error -> HomeError(onRetry = viewModel::onRetry)
+
+            is HomeUiState.Error -> HomeError(error = state.error, onRetry = viewModel::onRetry)
         }
     }
 }
@@ -88,14 +124,14 @@ fun HomeContent(
     onRefresh: () -> Unit,
     onOpenTimer: () -> Unit,
     modifier: Modifier = Modifier,
+    onLocationPromptClick: () -> Unit = {},
 ) {
     HomeLayout(
         modifier = modifier,
         sky = {
             SombraTopBar(
-                title = "Coimbra",
-                subtitle = "Hoje, 13:20",
-                onNotificationsClick = { /* TODO: abrir notificações */ },
+                title = uiState.locationName ?: stringResource(R.string.home_location_current),
+                subtitle = stringResource(R.string.home_today_at, uiState.updatedAt),
             )
             AnimatedVisibility(visible = uiState.isOffline) {      // aparece e desaparece suavemente
                 OfflineBanner(
@@ -105,13 +141,14 @@ fun HomeContent(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
+            val weather = uiState.weather
             Image(
-                painter = painterResource(R.drawable.weather_sol),
-                contentDescription = "Céu limpo",
+                painter = painterResource(weather.imageRes()),
+                contentDescription = stringResource(weather.condition.labelRes),
                 modifier = Modifier.size(230.dp),
             )
             Text(
-                text = "27°",
+                text = "${weather.temperature}°",
                 modifier = Modifier.offset(y = (-24).dp),
                 style = TextStyle(
                     fontSize = 96.sp,
@@ -122,7 +159,7 @@ fun HomeContent(
                 color = SombraColors.OnSky,
             )
             Text(
-                text = "Céu limpo · máx 29° mín 16°",
+                text = stringResource(R.string.home_condition_feels_like, stringResource(weather.condition.labelRes), weather.feelsLike),
                 modifier = Modifier.offset(y = (-16).dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
@@ -130,27 +167,64 @@ fun HomeContent(
             )
             Spacer(Modifier.height(4.dp))
             TempDetailsComponent(
-                uvNumber = "UV 8",
-                description = "Muito alto até às 16h",
+                uvNumber = stringResource(R.string.home_uv_value, weather.uvIndex),
+                description = weather.uvUntilHour
+                    ?.let { stringResource(R.string.home_uv_until, stringResource(weather.uvLevel.labelRes), it) }
+                    ?: stringResource(weather.uvLevel.labelRes),
+                uvColor = weather.uvLevel.color,
+                onUvColor = weather.uvLevel.onColor,
             )
         },
         card = {
-            InfoComponent(
-                title = "Queimas em ~15 min sem protetor",
-                description = "Pele tipo II. Procura sombra entre as 12h e as 16h.",
-                backgroundColor = SombraColors.RiskHighContainer,
-                titleColor = SombraColors.OnRiskHighContainer,
-                descriptionColor = SombraColors.OnRiskHighContainer,
-            )
-            TimerCard(
-                state = uiState.timerCard,
-                onAction = onTimerAction,
-                onOpen = onOpenTimer,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-            )
+            if (uiState.locationPrompt != LocationPrompt.None) {
+                LocationPromptCard(
+                    cityName = uiState.locationName ?: stringResource(R.string.home_location_current),
+                    buttonText = stringResource(
+                        if (uiState.locationPrompt == LocationPrompt.OpenSettings) R.string.home_location_open_settings
+                        else R.string.home_location_allow
+                    ),
+                    onClick = onLocationPromptClick,
+                )
+            }
+            SunRiskCard(risk = uiState.risk)
+            if (uiState.showTimerCard) {
+                TimerCard(
+                    state = uiState.timerCard,
+                    onAction = onTimerAction,
+                    onOpen = onOpenTimer,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                )
+            }
         },
     )
 }
+
+// "Queimas em ~21 min sem protetor · Pele tipo II. Procura sombra entre as 12h e as 16h."
+@Composable
+private fun SunRiskCard(risk: SunRiskUiState) {
+    val title = when {
+        risk.burnMinutes == null -> stringResource(R.string.home_risk_low_title)        // UV < 1: sem risco
+        risk.isBeyondCap -> stringResource(R.string.home_risk_burn_title_cap, SunRiskUiState.BURN_MINUTES_CAP)
+        else -> stringResource(R.string.home_risk_burn_title, risk.burnMinutes)
+    }
+    val description = when {
+        risk.shadeHours != null -> risk.shadeHours.text(R.string.home_risk_shade, risk.skinType)
+        risk.protectHours != null -> risk.protectHours.text(R.string.home_risk_protect, risk.skinType)
+        else -> stringResource(R.string.home_risk_none, risk.skinType)
+    }
+    InfoComponent(
+        title = title,
+        description = description,
+        backgroundColor = if (risk.isHigh) SombraColors.RiskHighContainer else SombraColors.SkyBluePale,
+        titleColor = if (risk.isHigh) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
+        descriptionColor = if (risk.isHigh) SombraColors.OnRiskHighContainer else SombraColors.SkyBlueDeep,
+        iconColor = if (risk.isHigh) SombraColors.UvVeryHigh else SombraColors.SkyBlue,
+    )
+}
+
+@Composable
+private fun HourRange.text(resId: Int, skinType: String): String =
+    stringResource(resId, skinType, startHour, endHour)
 
 @Composable
 fun HomeLoading(modifier: Modifier = Modifier) {
@@ -162,7 +236,8 @@ fun HomeLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HomeError(
+internal fun HomeError(
+    error: DataError,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -184,14 +259,14 @@ private fun HomeError(
                 modifier = Modifier.size(160.dp),
             )
             Text(
-                text = stringResource(R.string.home_error),
+                text = stringResource(error.titleRes),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = SombraColors.Text,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = stringResource(R.string.home_error_description),
+                text = stringResource(error.descriptionRes) + " " + stringResource(R.string.home_error_timer_hint),
                 style = MaterialTheme.typography.bodyLarge,
                 color = SombraColors.TextMuted,
                 textAlign = TextAlign.Center,
@@ -246,12 +321,24 @@ private fun HomeContentPreview() {
     SombraTheme {
         HomeContent(
             uiState = HomeUiState.Content(
+                weather = HomeWeatherUiState(
+                    temperature = 27, feelsLike = 28,
+                    condition = WeatherCondition.Clear, isDay = true,
+                    uvIndex = 8, uvLevel = UvLevel.VeryHigh, uvUntilHour = 16,
+                ),
+                risk = SunRiskUiState(
+                    burnMinutes = 21, skinType = "II",
+                    shadeHours = HourRange(12, 16), protectHours = HourRange(10, 18),
+                    recommendedSpf = 50,
+                ),
                 timerCard = TimerCardUiState.Running(
                     remainingHours = 1, remainingMinutes = 12,
                     spf = 50, appliedAt = "12:08", progress = 0.6f,
                 ),
                 isOffline = true,
                 hoursSinceUpdate = 2,
+                updatedAt = "13:20",
+                locationName = "Coimbra",
             ),
             onTimerAction = {},
             onRefresh = {},
@@ -269,5 +356,5 @@ private fun HomeLoadingPreview() {
 @Preview(showBackground = true, name = "Início · erro")
 @Composable
 private fun HomeErrorPreview() {
-    SombraTheme { HomeError(onRetry = {}) }
+    SombraTheme { HomeError(error = DataError.NoConnection, onRetry = {}) }
 }

@@ -42,8 +42,8 @@ fun uvColor(uvIndex: Int): Color = when {
 @Composable
 fun HourlyUvCard(
     hourly: List<HourlyUv>,
-    currentHour: Int,
-    currentUv: Int,
+    currentHour: Int?,                  // null: outro dia, nenhuma barra fica destacada
+    summary: String,                    // "agora: 8" ou "máx: 9"
     modifier: Modifier = Modifier,
 ) {
     val items = hourly.map { hour ->
@@ -72,7 +72,7 @@ fun HourlyUvCard(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = stringResource(R.string.forecast_uv_now, currentUv),
+                text = summary,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -104,7 +104,7 @@ private fun HourlyUvCardPreview() {
             hourly = listOf(1, 2, 4, 6, 8, 9, 9, 7, 5, 3, 2, 1)
                 .mapIndexed { i, uv -> HourlyUv(hour = 8 + i, uvIndex = uv) },
             currentHour = 13,
-            currentUv = 8,
+            summary = "agora: 8",
             modifier = Modifier.padding(20.dp),
         )
     }

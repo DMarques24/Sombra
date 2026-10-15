@@ -34,7 +34,6 @@ fun HomeSkySkeleton(modifier: Modifier = Modifier) {
                 SkySkeleton(Modifier.size(width = 120.dp, height = 24.dp), CircleShape)  // cidade
                 SkySkeleton(Modifier.size(width = 80.dp, height = 14.dp), CircleShape)   // data
             }
-            SkySkeleton(Modifier.size(48.dp), CircleShape)                               // notificações
         }
         Box(Modifier.size(230.dp), contentAlignment = Alignment.Center) {
             SkySkeleton(Modifier.size(140.dp), CircleShape)                              // sol

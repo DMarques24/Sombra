@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reminder_channel">Lembretes do protetor</string>
+    <string name="reminder_title">Hora de reaplicar ☀️</string>
+    <string name="reminder_text">O teu protetor já não te protege como antes. Reaplica e regista na Sombra.</string>
+</resources>

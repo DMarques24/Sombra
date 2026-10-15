@@ -1,7 +1,5 @@
 package com.dmm.data.mapper
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.dmm.data.remote.dto.CurrentDto
 import com.dmm.data.remote.dto.DailyDto
 import com.dmm.data.remote.dto.ForecastResponseDto
@@ -14,11 +12,11 @@ import com.dmm.domain.weather.model.WeatherCondition
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 // Converte a resposta da Open-Meteo (DTO, formato da API) no modelo do domínio.
 // Vive no :data porque é o único módulo que conhece os DTOs; o :domain não sabe de onde vêm os dados.
-@RequiresApi(Build.VERSION_CODES.O)
 fun ForecastResponseDto.toDomain(fetchedAt: Instant): Forecast {
     val hourly = hourly.toDomain()
     return Forecast(
@@ -26,11 +24,11 @@ fun ForecastResponseDto.toDomain(fetchedAt: Instant): Forecast {
         hourly = hourly,
         daily = daily.toDomain(),
         fetchedAt = fetchedAt,
+        zone = ZoneOffset.ofTotalSeconds(utcOffsetSeconds),
     )
 }
 
 // Recebe as horas para ter um plano B se o uv_index não vier no "current"
-@RequiresApi(Build.VERSION_CODES.O)
 private fun CurrentDto.toDomain(hourly: List<HourlyUv>): CurrentWeather {
     val now = LocalDateTime.parse(time)
     val uvFromHourly = hourly
@@ -48,7 +46,6 @@ private fun CurrentDto.toDomain(hourly: List<HourlyUv>): CurrentWeather {
 
 // A API manda listas paralelas: time[0] corresponde a uv_index[0], e assim por diante.
 // O zip junta-as em pares, e uma hora sem valor de UV conta como 0.
-@RequiresApi(Build.VERSION_CODES.O)
 private fun HourlyDto.toDomain(): List<HourlyUv> =
     time.zip(uvIndex) { t, uv ->
         HourlyUv(
@@ -58,7 +55,6 @@ private fun HourlyDto.toDomain(): List<HourlyUv> =
     }
 
 // Aqui são 6 listas paralelas: percorre-se pelo índice
-@RequiresApi(Build.VERSION_CODES.O)
 private fun DailyDto.toDomain(): List<DailyForecast> =
     time.indices.map { i ->
         DailyForecast(

@@ -16,7 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
-import com.dmm.presentation.skintype.SkinType
+import com.dmm.domain.profile.model.SkinType
+import com.dmm.presentation.common.color
+import com.dmm.presentation.common.description
+import com.dmm.presentation.common.roman
 
 // Os 6 tipos em 2 colunas; os dois cartões de cada linha ficam com a mesma altura
 @Composable

@@ -82,18 +82,18 @@ Sombra puts the **UV index first**. It tells you how long you can stay outside b
 
 ## Current status
 
-Every screen's UI is built in Compose and connected through navigation. The Open-Meteo client is built and unit-tested, but it isn't connected to the screens yet. Most screens still show sample data from their `UiState`.
+Every screen uses real data. Weather comes from Open-Meteo, accounts and profiles from Supabase, and the sunscreen timer and history are stored on the device and synced to the account.
 
-| Screen | Package | UI | Real data |
-|---|---|:---:|:---:|
-| Splash | `app` · `main/` | ✅ | — |
-| Login | `presentation/login` | ✅ | 🔜 Supabase |
-| Register (with password strength) | `presentation/register` | ✅ | 🔜 Supabase |
-| Skin type onboarding (Fitzpatrick grid, sun-place chips, step progress) | `presentation/skintype` | ✅ | 🔜 DataStore |
-| Home (loading skeleton, error and retry, offline banner, timer card) | `presentation/home` | ✅ | 🟡 Timer is live, weather is still sample data |
-| UV forecast (hourly bar chart, 5-day cards) | `presentation/forecast` | ✅ | 🔜 Open-Meteo |
-| Sunscreen timer (ring, SPF selector, water toggle) | `presentation/timer` | ✅ | 🔜 |
-| Profile (avatar, stats, level progress, patches) | `presentation/profile` | ✅ | 🔜 |
+| Screen | Package | Data |
+|---|---|---|
+| Splash | `app` · `main/` | Supabase session → Login, Skin type or Home |
+| Login (forgot password) | `presentation/login` | Supabase Auth |
+| Register (password strength, "use my location") | `presentation/register` | Supabase Auth + profile |
+| Skin type onboarding | `presentation/skintype` | Profile (local + Supabase) |
+| Home (skeleton, error and retry, offline banner, burn time, timer card) | `presentation/home` | Open-Meteo + timer + profile |
+| UV forecast (day picker, hourly chart, best time, next days) | `presentation/forecast` | Open-Meteo |
+| Sunscreen timer (SPF, water, reminder notification) | `presentation/timer` | Timer + Open-Meteo |
+| Profile (level, XP, streak, patches, edit, sign out, delete account) | `presentation/profile` | Profile + sunscreen history |
 
 ### Navigation flow
 
@@ -168,17 +168,16 @@ Users level up by building protective habits.
 | Splash | SplashScreen API with an animated exit | ✅ |
 | Dependency injection | Hilt (KSP) | ✅ |
 | Architecture | MVVM + Clean Architecture, multi-module, unidirectional data flow | ✅ |
-| Networking | Ktor 3.1 (OkHttp engine, content negotiation, timeouts, logging) + kotlinx.serialization | ✅ |
+| Networking | Ktor 3.1 (OkHttp engine, content negotiation, timeouts, logging in debug builds only) + kotlinx.serialization | ✅ |
 | Weather data | [Open-Meteo Forecast API](https://open-meteo.com/) (no API key needed): client and DTO → domain mapper | ✅ |
 | Time | `java.time` with an injected `Clock`, so time-based logic can be tested | ✅ |
-| Authentication | [Supabase Auth](https://supabase.com/docs/guides/auth) via `supabase-kt`, Credential Manager | 🔜 |
-| Local database | Room (forecast cache, sunscreen log, exposure history) | 🔜 |
+| Authentication | [Supabase Auth](https://supabase.com/docs/guides/auth) over its REST API with Ktor (email + password), RLS, `delete-account` Edge Function | ✅ |
+| Local storage | SharedPreferences + kotlinx.serialization today (profile, timer, history, forecast cache); Room planned | 🟡 |
 | Preferences | DataStore (skin type, settings) | 🔜 |
-| Location | Fused Location Provider (coarse location only) | 🔜 |
+| Location | Fused Location Provider (coarse location only) + Geocoder, with timeouts | ✅ |
 | Background work | WorkManager | 🔜 |
 | Widget | Jetpack Glance | 🔜 |
-| Unit testing | JUnit 4, Ktor `MockEngine`, `kotlinx-coroutines-test` | ✅ |
-| More testing | MockK, Turbine, Compose UI tests | 🔜 |
+| Testing | JUnit 4, Ktor `MockEngine`, `kotlinx-coroutines-test`, Turbine, Robolectric, Compose UI tests (fakes instead of mocks) | ✅ |
 | CI | GitHub Actions (build, lint, unit tests) | 🔜 |
 
 ✅ in place · 🟡 partly in place · 🔜 planned
@@ -269,7 +268,7 @@ Sombra/
     │       ├── di/                     # DataModule (bindings, Clock), NetworkModule (HttpClient)
     │       ├── remote/                 # OpenMeteoApi + dto/ForecastResponseDto
     │       ├── mapper/                 # ForecastMapper (DTO → domain)
-    │       └── repository/             # InMemorySunscreenRepository
+    │       └── repository/             # Open-Meteo, Supabase, local storage (SharedPreferences)
     ├── core/
     │   └── com/dmm/core/
     │       ├── designsystem/           # SombraTheme, SombraColors, Type, Shape
@@ -309,8 +308,8 @@ Sombra/
 
 - Android Studio (latest stable)
 - JDK 17
-- An Android device or emulator running **Android 7.0 (API 24)** or later
-- A free [Supabase](https://supabase.com/) project (not needed yet: only once login is connected)
+- An Android device or emulator running **Android 8.0 (API 26)** or later
+- A free [Supabase](https://supabase.com/) project (for sign-in; the rest of the project builds without it)
 
 ### 1. Clone the repository
 
@@ -319,22 +318,33 @@ git clone https://github.com/DMarques24/Sombra.git
 cd Sombra/Sombra
 ```
 
-### 2. Set up Supabase (planned)
-
-> [!NOTE]
-> Login isn't connected to Supabase yet, so you can skip this step for now.
+### 2. Set up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com/).
-2. Under **Authentication → Providers**, enable **Email**.
-3. Under **Project Settings → API**, copy the **Project URL** and the **anon public key**.
-4. Add them to `local.properties` in the Android project folder. This file is git-ignored, so keys are never committed:
+2. Run the SQL files in [`Sombra/supabase/migrations`](Sombra/supabase/migrations) in order (SQL Editor, or `supabase db push`). They create the `profiles` and `sunscreen_events` tables with Row Level Security, so each user can only read and write their own rows.
+3. Deploy the [`delete-account`](Sombra/supabase/functions/delete-account) Edge Function (`supabase functions deploy delete-account`). It is the only code that uses the service role key, and it runs on the server.
+4. Under **Project Settings → API Keys**, copy the **Project URL** and the **publishable** key (`sb_publishable_…`). **Never** put the `service_role` / secret key in the app.
+5. Add them to `local.properties` in the `Sombra/` folder. This file is git-ignored, so the keys are never committed:
 
    ```properties
-   SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_ANON_KEY=your-anon-key
+   supabase.url=https://your-project-id.supabase.co
+   supabase.anonKey=sb_publishable_...
    ```
 
-   They are exposed to the app through `BuildConfig`.
+   They reach the app through `BuildConfig` in the `:data` module. Without them the project still builds and runs; sign-in just shows "not configured".
+
+### Release signing (optional)
+
+Create an upload key and a git-ignored `keystore.properties` in the `Sombra/` folder:
+
+```properties
+storeFile=release-keys/sombra-upload.jks
+storePassword=...
+keyAlias=sombra-upload
+keyPassword=...
+```
+
+`./gradlew bundleRelease` then builds a signed, R8-minified App Bundle. Without the file, the release build is simply unsigned. Keep a backup of the `.jks` and the passwords outside the repository.
 
 ### 3. Run
 
@@ -346,7 +356,6 @@ From the command line:
 ./gradlew installDebug        # build and install on a connected device
 ./gradlew testDebugUnitTest   # unit tests
 ./gradlew :data:testDebugUnitTest  # only the data layer tests (API + mapper)
-./gradlew connectedCheck      # UI tests (device or emulator needed)
 ./gradlew lint                # static analysis
 ```
 
@@ -354,11 +363,16 @@ Open-Meteo doesn't need an API key, so weather data works straight away.
 
 ### Tests
 
-| Test | What it checks |
-|---|---|
-| `OpenMeteoApiTest` | Uses Ktor's `MockEngine` to check the URL and query parameters, JSON → DTO parsing, server errors and a missing `uv_index` |
-| `ForecastMapperTest` | DTO → domain mapping using a real saved response (`forecast_coimbra.json`), including the hourly UV fallback |
-| `OpenMeteoApiLiveTest` | Calls the real API for Coimbra. It's marked `@Ignore` because it needs internet, so run it by hand |
+All tests run on the JVM (`./gradlew test`): Compose UI tests use Robolectric, so no device is needed.
+
+| Layer | Tests | What they check |
+|---|---|---|
+| Domain | `CalculateSunRiskUseCaseTest`, `UvLevelTest`, `CalculateProgressTest`, `GetTodayWeatherUseCaseTest` | Burn time for every skin type, WHO UV boundaries (2.4 → Low, 2.5 → Moderate), XP, streaks and patches, "today" in the forecast's time zone |
+| Data | `OpenMeteoApiTest`, `ForecastMapperTest`, `OpenMeteoWeatherRepositoryTest`, `SupabaseErrorsTest`, `NetworkModuleTest` | Ktor `MockEngine`: success, no network (with and without cache), 500 and invalid JSON; Supabase error mapping; **no request logging in release** |
+| ViewModel | `HomeViewModelTest`, `TimerViewModelTest` | Loading → Content / Error, retry, offline cache, refresh, and every timer transition with a controllable `Clock` (Turbine + `MainDispatcherRule`, fakes instead of mocks) |
+| UI | `HomeScreenTest`, `TimerScreenTest` | Compose (`createComposeRule`): what each state shows and that buttons call the right callbacks |
+
+`OpenMeteoApiLiveTest` calls the real API, so it is `@Ignore`d and meant to be run by hand.
 
 ## How it works
 
@@ -417,7 +431,7 @@ Each Fitzpatrick skin type has a minimal erythemal dose (MED), the amount of UV 
 minutes to burn ≈ MED (J/m²) / (UV index × 0.025 × 60)
 ```
 
-For example, skin type II (MED ≈ 250 J/m²) at UV 8 gives about 20 minutes.
+MED values used: I = 200, II = 250, III = 300, IV = 450, V = 600, VI = 1000 J/m². For example, skin type II at UV 8 gives about 21 minutes. Below UV 1 there is no burn risk, and from 120 minutes the app shows "120+".
 
 > [!IMPORTANT]
 > The result is **not** multiplied by the SPF value. In real life people apply much less sunscreen than the amount used in lab tests, so the app caps the estimate and always shows it as a guideline.
@@ -432,7 +446,7 @@ The timer is already working in the domain layer:
   - `Running(remaining, progress)`: before `endsAt`
   - `Finished(overdue)`: past `endsAt`, for up to 30 minutes, then it goes back to `Idle` on its own
 - `TimerCardMapper` turns that status into what the Home timer card shows.
-- For now sessions are kept in memory by `InMemorySunscreenRepository`, a `@Singleton` shared between ViewModels. Room will replace it.
+- Sessions are stored on the device by `PreferencesSunscreenRepository`, a `@Singleton` shared by Home and the timer screen, so both always show the same state. A reminder notification is scheduled with `AlarmManager` (and rescheduled after a reboot).
 
 Because the current time comes from an injected `java.time.Clock`, tests can use a fixed clock.
 
@@ -448,21 +462,20 @@ WorkManager doesn't fire at the exact minute. A few minutes of delay is fine for
 
 ## Permissions
 
-Only `INTERNET` is declared right now. The others will be added together with their features.
-
 | Permission | Why |
 |---|---|
-| `ACCESS_COARSE_LOCATION` | UV index for your area. City-level precision is enough, so precise location is never requested. |
-| `POST_NOTIFICATIONS` | UV alerts and sunscreen reminders. Requested only when you turn on your first reminder (Android 13+). |
 | `INTERNET` | Forecast data and sign-in. |
-
-If you deny location access, you can choose a city manually.
+| `ACCESS_COARSE_LOCATION` | UV index for your area. City-level precision is enough, so precise location is never requested. If you deny it, the city from your profile is used. |
+| `POST_NOTIFICATIONS` | "Time to reapply" reminder. Requested when you start a timer (Android 13+). |
+| `RECEIVE_BOOT_COMPLETED` | Reschedules a running reminder after the phone restarts. |
 
 ## Privacy
 
-- Your **account** (email and password) is managed by Supabase Auth.
-- Your **skin type, sunscreen log and exposure history stay on your device**. They are never sent to a server.
-- Your location is used only to request the forecast and is not stored.
+- Your **account** (email and password) is managed by Supabase Auth. The password is never stored on the device.
+- Your **profile** (name, city, skin type, sun places) and **sunscreen history** (XP, levels, patches) are stored on the device and synced to your Supabase account, protected by Row Level Security: only you can read them.
+- Your **location** is used to request the forecast. The forecast cache keeps it rounded to about 11 km; it is never sent to Supabase.
+- The session tokens are kept in private app storage and excluded from Android backups.
+- **Delete account** (Profile → settings) permanently deletes the account and all its data on the server.
 
 ## Roadmap
 

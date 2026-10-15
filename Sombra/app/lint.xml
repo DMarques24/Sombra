@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Falso positivo: o ícone adaptativo só existe a partir da API 26, por isso o AAPT põe-no
+         sempre em -v26. Sem o sufixo, a configuração base fica sem ic_launcher e o build falha
+         (testado). A pasta tem de continuar a chamar-se mipmap-anydpi-v26. -->
+    <issue id="ObsoleteSdkInt">
+        <ignore path="src/main/res/mipmap-anydpi-v26" />
+    </issue>
+</lint>

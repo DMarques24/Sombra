@@ -24,7 +24,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.components.SombraStepProgressBar
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.domain.profile.model.SkinType
+import com.dmm.domain.profile.model.SunPlace
 import com.dmm.presentation.R
+import com.dmm.presentation.common.ObserveAsEvents
 import com.dmm.presentation.skintype.component.OnboardingFooter
 import com.dmm.presentation.skintype.component.SkinTypeGrid
 import com.dmm.presentation.skintype.component.SunPlaceChips
@@ -32,12 +35,13 @@ import com.dmm.presentation.skintype.component.SunPlaceChips
 @Composable
 fun SkinTypeScreen(onNext: () -> Unit,viewModel: SkinTypeViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // TODO: ligar Saltar e Seguinte quando houver navegação/lógica
+    ObserveAsEvents(viewModel.finished) { onNext() }
     SkinTypeContent(
         uiState = uiState,
         onSelectSkinType = viewModel::onSelectSkinType,
         onTogglePlace = viewModel::onTogglePlace,
-        onNext = onNext,
+        onSkip = viewModel::onSkip,
+        onNext = viewModel::onNext,
     )
 }
 
@@ -111,7 +115,7 @@ private fun SkinTypeContentPreview() {
         SkinTypeContent(
             uiState = SkinTypeUiState(
                 selectedSkinType = SkinType.II,
-                selectedPlaces = setOf(SunPlace.BEACH, SunPlace.RUNNING),
+                selectedPlaces = setOf(SunPlace.Beach, SunPlace.Running),
             ),
             onSelectSkinType = {},
             onTogglePlace = {},

@@ -4,8 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.dmm.core.navigation.RegisterRoute
 
-fun NavGraphBuilder.registerScreen(onContinue: () -> Unit) {
+fun NavGraphBuilder.registerScreen(onContinue: () -> Unit, onLogin: () -> Unit) {
     composable<RegisterRoute> {
-        RegisterScreen(onContinue = onContinue)
+        RegisterScreen(onContinue = onContinue, onLogin = onLogin)
     }
 }

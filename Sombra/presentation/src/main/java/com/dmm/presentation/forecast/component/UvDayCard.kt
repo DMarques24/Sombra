@@ -27,12 +27,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
+import com.dmm.presentation.R
 
 // Uma linha da previsão por dia: nome do dia, ícone do tempo, barra do UV máximo e o número numa pílula.
 @Composable
@@ -44,12 +46,13 @@ fun UvDayCard(
     maxUv: Int = 10,
 ) {
     val color = uvColor(uvLevel)
+    val description = stringResource(R.string.forecast_day_description, day, uvLevel)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 14.dp)
             // um leitor de ecrã lê a linha inteira de uma vez: "Amanhã, UV máximo 8"
-            .semantics(mergeDescendants = true) { contentDescription = "$day, UV máximo $uvLevel" },
+            .semantics(mergeDescendants = true) { contentDescription = description },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
