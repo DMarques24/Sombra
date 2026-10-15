@@ -8,6 +8,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import androidx.core.content.ContextCompat
+import com.dmm.data.di.IoDispatcher
 import com.dmm.domain.location.model.Coordinates
 import com.dmm.domain.location.repository.LocationRepository
 import com.google.android.gms.location.LocationServices
@@ -15,7 +16,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -27,6 +28,7 @@ import kotlin.coroutines.resume
 // Localização pelo Fused Location Provider dos Google Play Services
 class FusedLocationRepository @Inject constructor(
     @ApplicationContext private val context: Context,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : LocationRepository {
 
     private val client = LocationServices.getFusedLocationProviderClient(context)
@@ -102,7 +104,7 @@ class FusedLocationRepository @Inject constructor(
                 })
             }
         } else {
-            withContext(Dispatchers.IO) { request(null)?.firstOrNull() }
+            withContext(ioDispatcher) { request(null)?.firstOrNull() }
         }
 
     private companion object {
