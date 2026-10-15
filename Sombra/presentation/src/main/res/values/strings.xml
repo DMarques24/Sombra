@@ -161,9 +161,6 @@
     <string name="login_password">Palavra-passe</string>
     <string name="login_forgot_password">Esqueci-me</string>
     <string name="login_submit">Entrar</string>
-    <string name="login_or">ou</string>
-    <string name="login_apple">Apple</string>
-    <string name="login_google">Google</string>
     <string name="login_no_account">Ainda não tens conta?</string>
     <string name="login_create_account">Criar conta</string>
     <string name="login_loading">A entrar…</string>
