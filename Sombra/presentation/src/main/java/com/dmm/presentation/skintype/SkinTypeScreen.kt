@@ -27,6 +27,7 @@ import com.dmm.core.designsystem.SombraTheme
 import com.dmm.domain.profile.model.SkinType
 import com.dmm.domain.profile.model.SunPlace
 import com.dmm.presentation.R
+import com.dmm.presentation.common.ObserveAsEvents
 import com.dmm.presentation.skintype.component.OnboardingFooter
 import com.dmm.presentation.skintype.component.SkinTypeGrid
 import com.dmm.presentation.skintype.component.SunPlaceChips
@@ -34,12 +35,13 @@ import com.dmm.presentation.skintype.component.SunPlaceChips
 @Composable
 fun SkinTypeScreen(onNext: () -> Unit,viewModel: SkinTypeViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ObserveAsEvents(viewModel.finished) { onNext() }
     SkinTypeContent(
         uiState = uiState,
         onSelectSkinType = viewModel::onSelectSkinType,
         onTogglePlace = viewModel::onTogglePlace,
-        onSkip = { viewModel.onSkip(onDone = onNext) },
-        onNext = { viewModel.onNext(onDone = onNext) },
+        onSkip = viewModel::onSkip,
+        onNext = viewModel::onNext,
     )
 }
 

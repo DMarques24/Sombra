@@ -9,6 +9,9 @@ import com.dmm.domain.auth.usecase.SignUpUseCase
 import com.dmm.presentation.common.messageRes
 import com.dmm.presentation.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +28,10 @@ class RegisterViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RegisterUiState())
 
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+
+    // Evento de uma só vez: a conta ficou com sessão, o ecrã segue para o tipo de pele
+    private val _accountCreated = Channel<Unit>(Channel.BUFFERED)
+    val accountCreated: Flow<Unit> = _accountCreated.receiveAsFlow()
 
     fun onNameChange(name: String) = _uiState.update { it.copy(name = name, message = null) }
 
@@ -52,9 +59,9 @@ class RegisterViewModel @Inject constructor(
         it.copy(message = R.string.register_location_denied, messageIsError = true)
     }
 
-    // onDone só é chamado quando a conta fica com sessão; se o Supabase pedir confirmação por email,
+    // O evento só sai quando a conta fica com sessão; se o Supabase pedir confirmação por email,
     // fica neste ecrã com o aviso (depois de confirmar, a pessoa entra pelo Login)
-    fun onContinue(onDone: () -> Unit) {
+    fun onContinue() {
         val state = _uiState.value
         if (state.isLoading) return
         val problem = when {
@@ -74,7 +81,7 @@ class RegisterViewModel @Inject constructor(
                 is AuthResult.Success -> when (result.data) {
                     is SignUpOutcome.SignedIn -> {
                         _uiState.update { it.copy(isLoading = false) }
-                        onDone()
+                        _accountCreated.send(Unit)
                     }
                     SignUpOutcome.ConfirmEmail -> _uiState.update {
                         it.copy(isLoading = false, message = R.string.register_confirm_email, messageIsError = false)

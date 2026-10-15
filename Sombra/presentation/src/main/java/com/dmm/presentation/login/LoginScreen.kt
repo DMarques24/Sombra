@@ -34,6 +34,7 @@ import com.dmm.core.components.SombraTextField
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
+import com.dmm.presentation.common.ObserveAsEvents
 import com.dmm.presentation.login.component.LoginSkyHeader
 
 @Composable
@@ -43,12 +44,17 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is LoginEvent.SignedIn -> onSignedIn(event.onboardingCompleted)     // a navegação é decidida no SombraNavHost
+        }
+    }
     LoginContent(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onForgotPassword = viewModel::onForgotPassword,
-        onLogin = { viewModel.onLogin(onDone = onSignedIn) },     // a navegação é decidida no SombraNavHost
+        onLogin = viewModel::onLogin,
         onCreateAccount = onCreateAccount,
     )
 }

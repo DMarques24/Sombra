@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
+import com.dmm.presentation.common.ObserveAsEvents
 import com.dmm.presentation.profile.component.EditProfileSheet
 import com.dmm.presentation.profile.component.LevelProgress
 import com.dmm.presentation.profile.component.PatchesSection
@@ -39,6 +40,7 @@ import com.dmm.presentation.profile.component.StatCardsRow
 @Composable
 fun ProfileScreen(onSignedOut: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ObserveAsEvents(viewModel.signedOut) { onSignedOut() }
     // Como no Início: o esqueleto desaparece suavemente quando os dados chegam
     AnimatedContent(
         targetState = uiState,
@@ -56,9 +58,9 @@ fun ProfileScreen(onSignedOut: () -> Unit, viewModel: ProfileViewModel = hiltVie
             onCityChange = viewModel::onEditCity,
             onSkinTypeChange = viewModel::onEditSkinType,
             onSave = viewModel::onSaveEditor,
-            onSignOut = { viewModel.onSignOut(onDone = onSignedOut) },
+            onSignOut = viewModel::onSignOut,
             onDeleteAccount = viewModel::onDeleteAccountClick,
-            onConfirmDeleteAccount = { viewModel.onConfirmDeleteAccount(onDone = onSignedOut) },
+            onConfirmDeleteAccount = viewModel::onConfirmDeleteAccount,
             onDismissDeleteAccount = viewModel::onDismissDeleteAccount,
             onDismiss = viewModel::onDismissEditor,
         )

@@ -17,6 +17,9 @@ import com.dmm.presentation.common.roman
 import com.dmm.presentation.common.title
 import com.dmm.presentation.common.unlock
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +39,10 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val editor = MutableStateFlow<ProfileEditorState?>(null)
+
+    // Evento de uma só vez: saiu (ou apagou a conta), o ecrã vai para o Login
+    private val _signedOut = Channel<Unit>(Channel.BUFFERED)
+    val signedOut: Flow<Unit> = _signedOut.receiveAsFlow()
 
     // null enquanto lê o perfil e o histórico guardados: o ecrã mostra o esqueleto
     val uiState: StateFlow<ProfileUiState?> =
@@ -70,12 +77,12 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    // Termina a sessão no Supabase e apaga o perfil do telemóvel; onDone leva para o Login
-    fun onSignOut(onDone: () -> Unit) {
+    // Termina a sessão no Supabase e apaga os dados da conta do telemóvel
+    fun onSignOut() {
         viewModelScope.launch {
             editor.value = null
             signOut()
-            onDone()
+            _signedOut.send(Unit)
         }
     }
 
@@ -83,15 +90,15 @@ class ProfileViewModel @Inject constructor(
 
     fun onDismissDeleteAccount() = editor.update { it?.copy(isConfirmingDelete = false) }
 
-    // Apaga a conta no Supabase (perfil e histórico incluídos); onDone leva para o Login
-    fun onConfirmDeleteAccount(onDone: () -> Unit) {
+    // Apaga a conta no Supabase (perfil e histórico incluídos)
+    fun onConfirmDeleteAccount() {
         if (editor.value?.isDeleting == true) return
         editor.update { it?.copy(isDeleting = true) }
         viewModelScope.launch {
             when (val result = deleteAccount()) {
                 is AuthResult.Success -> {
                     editor.value = null
-                    onDone()
+                    _signedOut.send(Unit)
                 }
                 is AuthResult.Failure -> editor.update {
                     it?.copy(isDeleting = false, isConfirmingDelete = false, error = result.error.messageRes)

@@ -9,6 +9,9 @@ import com.dmm.domain.profile.repository.UserRepository
 import com.dmm.presentation.R
 import com.dmm.presentation.common.messageRes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,12 +30,15 @@ class LoginViewModel @Inject constructor(
 
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
+    // Evento de uma só vez: o ecrã navega quando o recebe (ver ObserveAsEvents)
+    private val _events = Channel<LoginEvent>(Channel.BUFFERED)
+    val events: Flow<LoginEvent> = _events.receiveAsFlow()
+
     fun onEmailChange(email: String) = _uiState.update { it.copy(email = email, message = null) }
 
     fun onPasswordChange(password: String) = _uiState.update { it.copy(password = password, message = null) }
 
-    // onDone recebe se o registo já foi acabado (tipo de pele escolhido): decide para onde ir
-    fun onLogin(onDone: (onboardingCompleted: Boolean) -> Unit) {
+    fun onLogin() {
         val state = _uiState.value
         if (state.isLoading) return
         if (state.email.isBlank() || state.password.isEmpty()) {
@@ -44,7 +50,8 @@ class LoginViewModel @Inject constructor(
             when (val result = signIn(state.email, state.password)) {
                 is AuthResult.Success -> {
                     _uiState.update { it.copy(isLoading = false, password = "") }
-                    onDone(userRepository.observeProfile().first().onboardingCompleted)
+                    // Diz se o registo já foi acabado (tipo de pele escolhido): decide para onde ir
+                    _events.send(LoginEvent.SignedIn(userRepository.observeProfile().first().onboardingCompleted))
                 }
                 is AuthResult.Failure -> _uiState.update {
                     it.copy(isLoading = false, message = result.error.messageRes, messageIsError = true)

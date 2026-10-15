@@ -1,5 +1,9 @@
 package com.dmm.presentation.testing
 
+import com.dmm.domain.auth.model.AuthResult
+import com.dmm.domain.auth.model.AuthUser
+import com.dmm.domain.auth.model.SignUpOutcome
+import com.dmm.domain.auth.repository.AuthRepository
 import com.dmm.domain.common.DataError
 import com.dmm.domain.common.DomainResult
 import com.dmm.domain.location.model.Coordinates
@@ -129,4 +133,22 @@ class FakeReminderScheduler : ReminderScheduler {
     override fun cancel() {
         scheduledAt = null
     }
+}
+
+class FakeAuthRepository(var signInResult: AuthResult<AuthUser> = AuthResult.Success(AuthUser("id-1", "ana@exemplo.pt"))) : AuthRepository {
+    val user = MutableStateFlow<AuthUser?>(null)
+    var signInCalls = 0
+
+    override fun observeUser(): Flow<AuthUser?> = user
+    override suspend fun signIn(email: String, password: String): AuthResult<AuthUser> {
+        signInCalls++
+        return signInResult.also { if (it is AuthResult.Success) user.value = it.data }
+    }
+    override suspend fun signUp(email: String, password: String, name: String, city: String): AuthResult<SignUpOutcome> =
+        AuthResult.Success(SignUpOutcome.ConfirmEmail)
+    override suspend fun sendPasswordReset(email: String): AuthResult<Unit> = AuthResult.Success(Unit)
+    override suspend fun signOut() {
+        user.value = null
+    }
+    override suspend fun deleteAccount(): AuthResult<Unit> = AuthResult.Success(Unit)
 }

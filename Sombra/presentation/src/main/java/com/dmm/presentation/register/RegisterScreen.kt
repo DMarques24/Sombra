@@ -48,6 +48,7 @@ import com.dmm.core.components.SombraTextField
 import com.dmm.core.designsystem.SombraColors
 import com.dmm.core.designsystem.SombraTheme
 import com.dmm.presentation.R
+import com.dmm.presentation.common.ObserveAsEvents
 import com.dmm.presentation.register.component.PasswordStrengthLabel
 
 @Composable
@@ -58,6 +59,8 @@ fun RegisterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    // a navegação é decidida no SombraNavHost; a ViewModel só avisa quando a conta está criada
+    ObserveAsEvents(viewModel.accountCreated) { onContinue() }
     val requestLocation = rememberLocationPermissionRequest { status ->
         if (status == LocationPermissionStatus.Granted) viewModel.onUseLocation() else viewModel.onLocationDenied()
     }
@@ -70,8 +73,7 @@ fun RegisterScreen(
         onUseLocation = {
             if (context.hasLocationPermission()) viewModel.onUseLocation() else requestLocation()
         },
-        // a navegação é decidida no SombraNavHost; o ViewModel só avisa quando o perfil está guardado
-        onContinue = { viewModel.onContinue(onDone = onContinue) },
+        onContinue = viewModel::onContinue,
         onLogin = onLogin,
     )
 }

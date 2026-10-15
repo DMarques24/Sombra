@@ -7,6 +7,9 @@ import com.dmm.domain.profile.model.SunPlace
 import com.dmm.domain.profile.model.UserProfile
 import com.dmm.domain.profile.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +25,10 @@ class SkinTypeViewModel @Inject constructor(
 
     val uiState: StateFlow<SkinTypeUiState> = _uiState.asStateFlow()
 
+    // Evento de uma só vez: o registo acabou, o ecrã segue para o Início
+    private val _finished = Channel<Unit>(Channel.BUFFERED)
+    val finished: Flow<Unit> = _finished.receiveAsFlow()
+
     fun onSelectSkinType(skinType: SkinType) = _uiState.update { it.copy(selectedSkinType = skinType) }
 
     fun onTogglePlace(place: SunPlace) = _uiState.update {
@@ -30,21 +37,20 @@ class SkinTypeViewModel @Inject constructor(
     }
 
     // "Seguinte": guarda as escolhas e acaba o registo
-    fun onNext(onDone: () -> Unit) = finish(onDone) { state ->
+    fun onNext() = finish { state ->
         copy(skinType = state.selectedSkinType, sunPlaces = state.selectedPlaces)
     }
 
     // "Saltar": acaba o registo sem tipo de pele (as contas usam o tipo II até a pessoa escolher no Perfil)
-    fun onSkip(onDone: () -> Unit) = finish(onDone) { this }
+    fun onSkip() = finish { this }
 
     private fun finish(
-        onDone: () -> Unit,
         transform: UserProfile.(SkinTypeUiState) -> UserProfile,
     ) {
         val state = _uiState.value
         viewModelScope.launch {
             userRepository.update { it.transform(state).copy(onboardingCompleted = true) }
-            onDone()
+            _finished.send(Unit)
         }
     }
 }
