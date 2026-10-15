@@ -233,7 +233,7 @@ fun HomeLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HomeError(
+internal fun HomeError(
     error: DataError,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,

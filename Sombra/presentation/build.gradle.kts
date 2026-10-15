@@ -21,6 +21,10 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        // Robolectric: os testes de UI (Compose) correm na JVM, sem emulador
+        unitTests.isIncludeAndroidResources = true
+    }
 
 }
 
@@ -39,4 +43,13 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
