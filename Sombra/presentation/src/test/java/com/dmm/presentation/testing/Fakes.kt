@@ -100,9 +100,14 @@ class FakeSunscreenRepository(private val clock: Clock) : SunscreenRepository {
     val session = MutableStateFlow<SunscreenSession?>(null)
     val history = MutableStateFlow<List<SunscreenEvent>>(emptyList())
 
+    // Tempo (virtual) que guardar demora: deixa o teste tocar duas vezes antes de a primeira acabar
+    var delayMillis = 0L
+
     override fun observeActiveSession(): Flow<SunscreenSession?> = session
-    override suspend fun start(spf: Int, inWater: Boolean) =
-        SunscreenSession(clock.instant(), spf, inWater).also { session.value = it }
+    override suspend fun start(spf: Int, inWater: Boolean): SunscreenSession {
+        if (delayMillis > 0) delay(delayMillis)
+        return SunscreenSession(clock.instant(), spf, inWater).also { session.value = it }
+    }
     override suspend fun reapply() = session.value?.copy(appliedAt = clock.instant())?.also { session.value = it }
     override suspend fun stop() {
         session.value = null

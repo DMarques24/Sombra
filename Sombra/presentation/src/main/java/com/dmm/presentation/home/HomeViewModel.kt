@@ -48,6 +48,7 @@ class HomeViewModel @Inject constructor(
     private val weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
     private val isRefreshing = MutableStateFlow(false)
     private var loadJob: Job? = null
+    private var timerActionJob: Job? = null
 
     // null até a pessoa responder ao pedido de permissão: até lá o ecrã fica no esqueleto
     private var locationPrompt: LocationPrompt? = null
@@ -99,7 +100,9 @@ class HomeViewModel @Inject constructor(
     fun onTimerAction() {
         val content = uiState.value as? HomeUiState.Content ?: return
         val uvNow = content.weather.uvIndex
-        viewModelScope.launch {
+        // Um toque duplo no cartão não pode registar duas aplicações
+        if (timerActionJob?.isActive == true) return
+        timerActionJob = viewModelScope.launch {
             when (content.timerCard) {
                 // O mesmo SPF que o ecrã do Protetor recomenda
                 TimerCardUiState.Idle ->

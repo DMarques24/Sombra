@@ -16,6 +16,7 @@ import com.dmm.domain.weather.model.TodayWeather
 import com.dmm.domain.weather.usecase.CalculateSunRiskUseCase
 import com.dmm.domain.weather.usecase.GetTodayWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -106,18 +107,23 @@ class TimerViewModel @Inject constructor(
 
     fun onApply() {
         val idle = uiState.value as? TimerUiState.Idle ?: return
-        viewModelScope.launch {
+        runAction {
             applySunscreen(spf = idle.selectedSpf, inWater = idle.goingToWater, uvIndex = idle.uvNow ?: 0)
             selection.value = Selection()
         }
     }
 
-    fun onReapply() {
-        viewModelScope.launch { reapplySunscreen(uvIndex = currentUv()) }
-    }
+    fun onReapply() = runAction { reapplySunscreen(uvIndex = currentUv()) }
 
-    fun onLeftSun() {
-        viewModelScope.launch { leaveSun(uvIndex = currentUv()) }
+    fun onLeftSun() = runAction { leaveSun(uvIndex = currentUv()) }
+
+    // Um toque duplo não pode registar duas aplicações (nem dar XP a dobrar):
+    // enquanto uma ação está a correr, as outras são ignoradas
+    private var actionJob: Job? = null
+
+    private fun runAction(action: suspend () -> Unit) {
+        if (actionJob?.isActive == true) return
+        actionJob = viewModelScope.launch { action() }
     }
 
     private fun currentUv(): Int = weather.value?.today?.current?.uvIndex?.roundToInt() ?: 0

@@ -126,6 +126,19 @@ class TimerViewModelTest {
     }
 
     @Test
+    fun `dois toques seguidos em Apliquei registam uma só aplicação`() = runTest {
+        sunscreen.delayMillis = 500
+        val vm = viewModel()
+        vm.uiState.test {
+            skipItems(1)
+            vm.onApply()
+            vm.onApply()                                        // o segundo toque chega antes de o primeiro acabar
+            assertTrue(awaitItem() is TimerUiState.Running)
+        }
+        assertEquals(1, sunscreen.history.value.count { it.type == SunscreenEvent.Type.Applied })
+    }
+
+    @Test
     fun `sem resposta 30 minutos depois de acabar, o temporizador termina sozinho`() = runTest {
         val vm = viewModel()
         vm.uiState.test {
