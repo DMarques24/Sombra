@@ -18,7 +18,16 @@ sealed interface HomeUiState {
         val hoursSinceUpdate: Int = 0,
         val isRefreshing: Boolean = false,
         val locationPrompt: LocationPrompt = LocationPrompt.None,
-    ) : HomeUiState
+    ) : HomeUiState {
+        // Com UV abaixo de 3 não se pede protetor, por isso o cartão não aparece.
+        // Exceção: um temporizador já a contar (ou acabado) continua visível até a pessoa responder.
+        val showTimerCard: Boolean
+            get() = timerCard != TimerCardUiState.Idle || weather.uvIndex >= MIN_UV_FOR_TIMER
+
+        companion object {
+            const val MIN_UV_FOR_TIMER = 3
+        }
+    }
 }
 
 // O tempo de agora, já arredondado para o ecrã

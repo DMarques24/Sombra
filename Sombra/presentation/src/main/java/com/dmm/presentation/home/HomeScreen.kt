@@ -187,12 +187,14 @@ fun HomeContent(
                 )
             }
             SunRiskCard(risk = uiState.risk)
-            TimerCard(
-                state = uiState.timerCard,
-                onAction = onTimerAction,
-                onOpen = onOpenTimer,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-            )
+            if (uiState.showTimerCard) {
+                TimerCard(
+                    state = uiState.timerCard,
+                    onAction = onTimerAction,
+                    onOpen = onOpenTimer,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                )
+            }
         },
     )
 }

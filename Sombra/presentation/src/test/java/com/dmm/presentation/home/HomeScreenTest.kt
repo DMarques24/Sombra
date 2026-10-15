@@ -92,6 +92,21 @@ class HomeScreenTest {
     }
 
     @Test
+    fun `com UV abaixo de 3 o cartão do temporizador não aparece, mas um temporizador ativo continua`() {
+        var state by mutableStateOf(content(uvIndex = 2))
+        composeRule.setContent { SombraTheme { HomeContent(state, onTimerAction = {}, onRefresh = {}, onOpenTimer = {}) } }
+        val applyButton = context.getString(R.string.timer_card_apply_button)
+
+        composeRule.onNodeWithText(applyButton).assertDoesNotExist()
+
+        state = content(uvIndex = 2, timerCard = TimerCardUiState.Finished(overdueMinutes = 5, uvNow = 2))
+        composeRule.onNodeWithText(context.getString(R.string.timer_title_finished)).performScrollTo().assertIsDisplayed()
+
+        state = content(uvIndex = 3)
+        composeRule.onNodeWithText(applyButton).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun `Error mostra a mensagem e o Tenta outra vez chama o retry`() {
         var retries = 0
         composeRule.setContent { SombraTheme { HomeError(DataError.NoConnection, onRetry = { retries++ }) } }

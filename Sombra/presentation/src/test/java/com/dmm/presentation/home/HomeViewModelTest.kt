@@ -147,6 +147,20 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `com UV abaixo de 3 o cartão do temporizador fica escondido`() = runTest {
+        weather.result = FakeWeatherRepository.success(today, clock.instant(), uvNow = 2.0)
+        val vm = viewModel()
+        vm.uiState.test {
+            skipItems(1)
+            vm.onLocationPermissionResult(LocationPermissionStatus.Granted)
+
+            val content = awaitItem() as HomeUiState.Content
+            assertEquals(2, content.weather.uvIndex)
+            assertFalse(content.showTimerCard)
+        }
+    }
+
+    @Test
     fun `aplicar protetor no cartão começa o temporizador com o SPF recomendado e agenda o aviso`() = runTest {
         val vm = viewModel()
         vm.uiState.test {
