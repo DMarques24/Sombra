@@ -28,6 +28,10 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    testOptions {
+        // Robolectric: os testes JVM usam SharedPreferences e recursos Android a sério
+        unitTests.isIncludeAndroidResources = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -54,6 +58,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
 }

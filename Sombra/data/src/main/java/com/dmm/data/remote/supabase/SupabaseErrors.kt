@@ -28,15 +28,19 @@ internal suspend fun <T> safeAuthCall(block: suspend () -> T): AuthResult<T> {
     }
 }
 
-// O Supabase manda {"error_code": "...", "msg": "..."} (ou, nas versões antigas, {"error": "...", "error_description": "..."})
-private suspend fun ResponseException.toAuthError(): AuthError {
-    if (response.status.value == 429) return AuthError.TooManyRequests
-    val body = runCatching { json.decodeFromString<JsonObject>(response.bodyAsText()) }.getOrNull()
-    val code = listOf("error_code", "code", "error")
-        .firstNotNullOfOrNull { key -> body?.get(key)?.let { runCatching { it.jsonPrimitive.content }.getOrNull() } }
+private suspend fun ResponseException.toAuthError(): AuthError =
+    authErrorFor(response.status.value, runCatching { response.bodyAsText() }.getOrNull())
+
+// O Supabase manda {"error_code": "...", "msg": "..."} (ou, nas versões antigas, {"error": "...", "error_description": "..."}).
+// Função pura (estado HTTP + corpo -> erro) para ser testada sem rede.
+internal fun authErrorFor(status: Int, body: String?): AuthError {
+    if (status == 429) return AuthError.TooManyRequests
+    val json = body?.let { runCatching { json.decodeFromString<JsonObject>(it) }.getOrNull() }
+    val code = listOf("error_code", "error", "code")
+        .firstNotNullOfOrNull { key -> json?.get(key)?.let { runCatching { it.jsonPrimitive.content }.getOrNull() } }
         .orEmpty()
     val message = listOf("msg", "message", "error_description")
-        .firstNotNullOfOrNull { key -> body?.get(key)?.let { runCatching { it.jsonPrimitive.content }.getOrNull() } }
+        .firstNotNullOfOrNull { key -> json?.get(key)?.let { runCatching { it.jsonPrimitive.content }.getOrNull() } }
         .orEmpty()
         .lowercase()
 
