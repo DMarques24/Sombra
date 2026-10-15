@@ -13,3 +13,20 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Assinatura da versão da Play Store: nunca vai para o git (guarda cópias num sítio seguro!)
+keystore.properties
+*.jks
+*.keystore
+
+# Variáveis de ambiente, artefactos de build e caches que não podem ir para um repositório público
+.env
+.env.*
+*.apk
+*.aab
+.kotlin/
+/app/release/
+# Ficheiros do Android Studio que dependem da máquina (dispositivos, alvos de deploy)
+.idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+.idea/workspace.xml
