@@ -3,6 +3,7 @@ package com.dmm.data.repository
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.dmm.data.di.NetworkModule
+import com.dmm.data.local.CachedForecast
 import com.dmm.data.local.LocalStore
 import com.dmm.data.remote.OpenMeteoApi
 import com.dmm.domain.common.DataError
@@ -77,6 +78,15 @@ class OpenMeteoWeatherRepositoryTest {
 
         assertTrue(forecast.isFromCache)
         assertEquals(firstFetch, forecast.fetchedAt)            // para o aviso "dados de há 3h"
+    }
+
+    @Test
+    fun `a cache guarda a localização arredondada a 1 casa decimal`() = runTest {
+        repository(ok).getForecast(40.20334, -8.41029)
+
+        val cached = store.read("forecast_cache", CachedForecast.serializer())!!
+        assertEquals(40.2, cached.latitude, 0.0)
+        assertEquals(-8.4, cached.longitude, 0.0)
     }
 
     @Test

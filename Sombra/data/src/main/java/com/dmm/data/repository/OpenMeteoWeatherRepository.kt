@@ -28,7 +28,7 @@ class OpenMeteoWeatherRepository @Inject constructor(
             store.write(
                 KEY,
                 CachedForecast.serializer(),
-                CachedForecast(latitude, longitude, fetchedAt.toEpochMilli(), response),
+                CachedForecast(latitude.coarse(), longitude.coarse(), fetchedAt.toEpochMilli(), response),
             )
             response.toDomain(fetchedAt = fetchedAt)
         }
@@ -48,6 +48,10 @@ class OpenMeteoWeatherRepository @Inject constructor(
         if (!isNearby || !isRecent) return null
         return cached.response.toDomain(fetchedAt = fetchedAt).copy(isFromCache = true)
     }
+
+    // A cache só precisa de saber se é "do mesmo sítio" (0,5° de margem): guarda-se a localização
+    // com 1 casa decimal (~11 km), para não ficar uma posição precisa no telemóvel nem nas cópias de segurança
+    private fun Double.coarse(): Double = Math.round(this * 10) / 10.0
 
     private companion object {
         const val KEY = "forecast_cache"
