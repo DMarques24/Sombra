@@ -26,6 +26,23 @@ class CalculateSunRiskUseCaseTest {
     }
 
     @Test
+    fun `cada fototipo usa o MED da especificação`() {
+        // minutos = MED / (UV × 0,025 × 60); com UV 10 cada minuto dá 15 J/m²
+        val expected = mapOf(
+            SkinType.I to 13, SkinType.II to 17, SkinType.III to 20,
+            SkinType.IV to 30, SkinType.V to 40, SkinType.VI to 67,
+        )
+        expected.forEach { (type, minutes) ->
+            assertEquals("tipo $type", minutes, calculate(type, uvNow = 10.0, hourlyToday = emptyList()).burnMinutes)
+        }
+    }
+
+    @Test
+    fun `UV exatamente 1 já tem tempo para queimar`() {
+        assertEquals(167, calculate(SkinType.II, uvNow = 1.0, hourlyToday = emptyList()).burnMinutes)
+    }
+
+    @Test
     fun `pele mais escura aguenta mais tempo`() {
         val typeII = calculate(SkinType.II, 8.0, emptyList()).burnMinutes!!
         val typeV = calculate(SkinType.V, 8.0, emptyList()).burnMinutes!!

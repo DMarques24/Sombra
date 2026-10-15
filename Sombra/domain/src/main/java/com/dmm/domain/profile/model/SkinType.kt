@@ -5,7 +5,7 @@ package com.dmm.domain.profile.model
 enum class SkinType(val med: Int) {
     I(200),
     II(250),
-    III(350),
+    III(300),
     IV(450),
     V(600),
     VI(1000),
